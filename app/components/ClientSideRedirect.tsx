@@ -1,20 +1,18 @@
+"use client"; // Mark this component as a client component
 
-"use client"; 
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import useSessionData from '../hook/useSessionData'; // Adjust path as needed
 
 const ClientSideRedirect: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, loading } = useSessionData();
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
 
-
   useEffect(() => {
-    if (status === "loading") return; // Wait for the session to load
+    if (loading) return; // Wait for the session to load
 
     if (!session) {
       setRedirectUrl('/signIn');
     } else {
-    
       const userRole = session.user?.role;
       switch (userRole) {
         case 'admin':
@@ -30,7 +28,7 @@ const ClientSideRedirect: React.FC = () => {
           setRedirectUrl('/unauthorized');
       }
     }
-  }, [session, status]);
+  }, [session, loading]);
 
   // Use effect to redirect on the client side
   useEffect(() => {

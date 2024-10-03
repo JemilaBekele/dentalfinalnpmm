@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
 import SideNavbar from "./sidebar";
-import { SmileOutlined, UserOutlined } from '@ant-design/icons';
+import {  UserOutlined,ProjectOutlined,FormOutlined ,BuildOutlined ,TeamOutlined} from '@ant-design/icons';
 
 const items = [
-  { label: "Dashboard", icon: <SmileOutlined />, link: "/dashboard" },
-  { label: "Register", icon: <SmileOutlined />, link: "/reception/client/add" },
-  { label: "Patients", icon: <UserOutlined />, link: "/reception/client/all" },
-  { label: "Order", icon: <SmileOutlined />, link: "/reception/client/order" },
-  { label: "Profile", icon: <UserOutlined />, link: "/profile" },
-  { label: "Logout", icon: <UserOutlined />, link: "/logout" },
+  { label: "Dashboard", icon: <ProjectOutlined/>, link: "/reception" },
+  { label: "Register", icon: <FormOutlined />, link: "/reception/client/add" },
+  { label: "Patients", icon: <TeamOutlined />, link: "/reception/client/all" },
+  { label: "Order", icon: <BuildOutlined />, link: "/reception/client/order" },
+  { label: "Profile", icon: <UserOutlined />, link: "/reception/profile" },
+
 ];
 
 const Recpage: React.FC = () => {

@@ -3,7 +3,7 @@ import User from "@/app/(models)/User";
 
 import { NextAuthOptions } from "next-auth";
 import { connect } from "@/app/lib/mongodb";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 connect();
 
@@ -14,6 +14,7 @@ interface UserType {
   password: string;
   role: string;
   phone: string;
+  image:string;
 }
 
 export const options: NextAuthOptions = {
@@ -43,8 +44,10 @@ export const options: NextAuthOptions = {
 
             if (match) {
               console.log("Password match successful");
-              const { password, ...userWithoutPassword } = foundUser;
-              return { id: foundUser._id.toString(), ...userWithoutPassword };
+              // Omit destructuring the password field since it's not needed
+  
+  const { _id, username, role, phone, image} = foundUser;
+              return { id: _id.toString(), username, role, phone,image };
             } else {
               console.log("Password does not match");
             }
@@ -72,6 +75,8 @@ export const options: NextAuthOptions = {
         token.role = user.role;
         token.username = user.username;
         token.id = user.id;
+        token.image = user.image;
+
       }
       return token;
     },
@@ -80,8 +85,14 @@ export const options: NextAuthOptions = {
         session.user.role = token.role as string;
         session.user.username = token.username as string;
         session.user.id = token.id as string;
+        session.user.image = token.image as string;
+
       }
       return session;
     },
   },
 };
+
+
+
+

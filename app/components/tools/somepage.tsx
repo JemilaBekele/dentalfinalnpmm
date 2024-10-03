@@ -1,15 +1,17 @@
 "use client";
 import React from "react";
 import SideNavbar from "./sidebar";
-import { ContainerOutlined, UserOutlined, ProjectOutlined, TeamOutlined, SolutionOutlined , LogoutOutlined} from '@ant-design/icons';
+import { ContainerOutlined, UserOutlined, ProjectOutlined, TeamOutlined, SolutionOutlined  } from '@ant-design/icons';
 
 const items= [
-  { label: "Dashboard", icon: <ProjectOutlined/>, link: "/dashboard" },
+  { label: "Dashboard", icon: <ProjectOutlined/>, link: "/admin" },
   { label: "Register", icon: <SolutionOutlined />, link: "/admin/users/add" },
   { label: "Employees", icon: <TeamOutlined />, link: "/admin/users" },
-  { label: "Patients", icon: <UserOutlined />, link: "/patients" },
-  { label: "Profile", icon: <ContainerOutlined/>, link: "/profile" },
-  { label: "Logout", icon: <LogoutOutlined/>, link: "/logout" },
+  { label: "Patients", icon: <UserOutlined />, link: "/admin/Patient" },
+  { label: "Services", icon: <ContainerOutlined/>, link: "/admin/Services" },
+  { label: "Medical Material", icon: <UserOutlined />, link: "/admin/medicalMaterial" },
+  { label: "Profile", icon: <ContainerOutlined/>, link: "/admin/profile" },
+
 ];
 
 const SomePage: React.FC = () => {

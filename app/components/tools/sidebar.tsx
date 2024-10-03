@@ -1,8 +1,10 @@
+"use client";
 import React, { useState } from "react";
-import {  MenuOutlined ,LogoutOutlined } from '@ant-design/icons';
+import { MenuOutlined, LogoutOutlined } from '@ant-design/icons';
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import {  signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image'
 type NavItem = {
   label: string;
   icon: React.ReactNode; // Using React.ReactNode for icons
@@ -13,9 +15,15 @@ type SideNavbarProps = {
   items: NavItem[];
 };
 
+
+
 const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
+  // Memoize user data to avoid unnecessary re-renders
+
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -31,7 +39,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
         className="fixed top-1 left-4 z-30 p-0 rounded-md text-gray-800 hover:bg-gray-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white md:hidden"
       >
         <span className="sr-only">Toggle sidebar</span>
-        <MenuOutlined  className="h-5 w-5" aria-hidden="true" />
+        <MenuOutlined className="h-5 w-5" aria-hidden="true" />
       </button>
 
       <div
@@ -42,13 +50,19 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
         <div className="nav">
           <div className="p-6">
             <div className="flex flex-col justify-start items-center">
-              <h1 className="text-base text-center cursor-pointer font-bold text-blue-900 border-b border-gray-300 pb-4 w-full">
-                Admin Dashboard
-              </h1>
+              
+              <Image 
+        src="/assets/file.png" // Path to your image
+        alt="Example Image"
+        width={70}  // Desired width
+        height={100} // Desired height
+        priority    // Optional: load the image with high priority
+      />
+              
               <div className="my-4 border-b border-gray-300 pb-4">
-                {items.slice(0, 5).map((item, index) => (
+                {items.slice(0, 7).map((item, index) => (
                   <Link key={index} href={item.link}>
-                    <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg">
+                    <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-blue-400 p-2 rounded-md group cursor-pointer hover:shadow-lg">
                       {item.icon} {/* Using the icon directly */}
                       <h3 className="text-base text-gray-800 group-hover:text-white font-semibold">
                         {item.label}
@@ -59,7 +73,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
               </div>
               <div className="my-4">
                 <div
-                  className="flex mb-2 justify-start items-center gap-4 pl-5 border border-gray-300 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg"
+                  className="flex mb-2 justify-start items-center gap-4 pl-5 border border-gray-300 hover:bg-blue-400 p-2 rounded-md group cursor-pointer hover:shadow-lg"
                   onClick={handleLogout}
                 >
                   <LogoutOutlined className="text-2xl text-gray-600 group-hover:text-white" />

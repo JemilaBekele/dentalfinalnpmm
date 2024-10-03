@@ -1,14 +1,11 @@
 import {connect} from "@/app/lib/mongodb";
 import Patient from "@/app/(models)/Patient";
 import { NextRequest, NextResponse } from "next/server";
-import {authMiddleware,authorizedMiddleware} from "@/app/helpers/authentication"
+import {authorizedMiddleware} from "@/app/helpers/authentication"
 connect();
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+  authorizedMiddleware(request);
     try {
      
       const { id } = params;
@@ -24,7 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       }
   
       return NextResponse.json(patient);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error in GET /api/patient/registerdata:", error);
       return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
@@ -32,10 +29,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const authResponse = await authMiddleware(request, 'reception');
-  if (authResponse) {
-    return authResponse;
-  }
+  authorizedMiddleware(request);
     try {
       
       const { id } = params;
@@ -51,17 +45,14 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       }
   
       return NextResponse.json({ message: "patient deleted successfully" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error in DELETE /api/patient/registerdata:", error);
       return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
   }
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
-  const authResponse = await authMiddleware(request, 'reception');
-  if (authResponse) {
-    return authResponse;
-  }
+  authorizedMiddleware(request);
     try {
     
       const { id } = params;
@@ -78,7 +69,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       }
   
       return NextResponse.json(updatedPatient);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error in PATCH /api/patient/registerdata:", error);
       return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a phone number"],
   },
+  image: {
+    type: String,
+    required: false, // Optional: set to true if you want to require an image
+    default: null, // Default value if no image is provided
+  },
 });
 
 

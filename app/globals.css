@@ -1,10 +1,10 @@
-@tailwind base;
-@tailwind components;
+@tailwind base; 
+@tailwind components; 
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 100%; /* Default background color (white) */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -32,7 +32,7 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 84% 4.9%; /* Dark mode background */
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -61,9 +61,9 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border; /* Apply border styles to all elements */
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground; /* Set body background and text colors */
   }
 }

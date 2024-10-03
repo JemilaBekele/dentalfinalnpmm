@@ -1,36 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-export async function authMiddleware(request: NextRequest, requiredRole?: string) {
-  const token = await getToken({ req: request, secret: process.env.JWT_SECRET });
-
-  if (!token) {
-    return NextResponse.json({ message: 'Unauthorized: No token provided' }, { status: 401 });
-  }
-
-  if (requiredRole && token.role !== requiredRole) {
-    return NextResponse.json({ message: `Forbidden: Requires ${requiredRole} role` }, { status: 403 });
-  }
-
-  // Log token for debugging
-  console.log("Token Data:", token);
-
-  (request as any).user = {
-    id: token.id,
-    username: token.username,
-    role: token.role,
+// Define a custom interface that extends NextRequest to include 'user'
+interface AuthenticatedRequest extends NextRequest {
+  user?: {
+    id: string;
+    username: string;
+    role: string;
   };
-
-  return null;
 }
 
-export async function authorizedMiddleware(request: NextRequest) {
+export async function authorizedMiddleware(request: AuthenticatedRequest) {
   const token = await getToken({ req: request, secret: process.env.JWT_SECRET });
 
   if (!token) {
     return NextResponse.json({ message: 'Unauthorized: No token provided' }, { status: 401 });
   }
 
- 
+  console.log("Token Data:", token);
+
+  request.user = {
+    id: token.id as string,
+    username: token.username as string,
+    role: token.role as string,
+  };
+
   return null;
 }

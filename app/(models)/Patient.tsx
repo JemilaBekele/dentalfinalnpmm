@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import Order from "./Order";
-import MedicalHistory from "./MedicalFinding"; // Import Order model
+ // Import Order model
 
 
 import userReferenceSchema from "@/app/helpers/userReferenceSchema"; 
@@ -18,12 +17,7 @@ const patientSchema = new mongoose.Schema({
       minlength: 3,
       maxlength: 50,
     },
-    lastname: {
-      type: String,
-      required: [true, "Please provide a lastname"],
-      minlength: 3,
-      maxlength: 50,
-    },
+   
     age: {
       type: String,
       required: [true, "Please provide an age"],
@@ -61,12 +55,37 @@ const patientSchema = new mongoose.Schema({
         ref: "MedicalFinding",
       },
     ],
-    MedicalTreatment: [
+    Healthinfo: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "MedicalTreatment",
+        ref: "Healthinfo",
       },
     ],
+    Appointment: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Appointment",
+      },
+    ],
+    Image: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
+    ],
+    Invoice: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invoice",
+      },
+    ],
+    Card: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Card",
+      },
+    ]
+    
   }, { 
     timestamps: true,  // Standard options
     strictPopulate: false // Add it as part of the main options object
