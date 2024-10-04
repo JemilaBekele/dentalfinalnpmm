@@ -1,11 +1,7 @@
 
-import dynamic from 'next/dynamic';
 
 // Dynamically import components
-const DynamicLoginForm = dynamic(() => import('@/app/components/Login'), {
-  ssr: false, // Disable server-side rendering for this component
-});
-
+import DynamicLoginForm from '@/app/components/Login'
 
 
 export default async function SignInPage() {

@@ -29,7 +29,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
 
   const handleLogout = async () => {
     await signOut({ redirect: false }); // Perform client-side sign-out
-    router.push('/signIn'); // Redirect to sign-in page after logout
+    router.push('/'); // Redirect to sign-in page after logout
   };
 
   return (
@@ -60,7 +60,7 @@ const SideNavbar: React.FC<SideNavbarProps> = ({ items }) => {
       />
               
               <div className="my-4 border-b border-gray-300 pb-4">
-                {items.slice(0, 7).map((item, index) => (
+                {items.slice(0, 8).map((item, index) => (
                   <Link key={index} href={item.link}>
                     <div className="flex mb-2 justify-start items-center gap-4 pl-5 hover:bg-blue-400 p-2 rounded-md group cursor-pointer hover:shadow-lg">
                       {item.icon} {/* Using the icon directly */}

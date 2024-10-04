@@ -243,7 +243,7 @@ export default function InvoiceForm({ params }: InvoiceFormProps) {
 
               <div className="flex space-x-6 mb-4">
                 <div>
-                  <label className="font-bold">Now Paid:</label>
+                  <label className="font-bold">Current Payment:</label>
                   <input
                     type="number"
                     value={currentpayment}

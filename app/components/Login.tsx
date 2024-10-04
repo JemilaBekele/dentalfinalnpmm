@@ -34,7 +34,7 @@ const LoginForm: React.FC = () => {
   useEffect(() => {
     if (loading) return; // Wait for session data to load
     if (!session) {
-      router.push("/signIn"); // Redirect to sign-in page if not authenticated
+      router.push("/"); // Redirect to sign-in page if not authenticated
     } else {
       const userRole = session.user?.role; // Get the role from session
       switch (userRole) {

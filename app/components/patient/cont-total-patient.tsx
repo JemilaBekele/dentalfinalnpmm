@@ -74,7 +74,7 @@ const PatientDashboard = () => {
           <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center text-center">
             <div className="flex flex-col items-center mb-2">
               <FieldTimeOutlined style={{ fontSize: '36px', color: '#1E90FF' }} /> {/* Blue color for icon */}
-              <h2 className="text-xl font-bold mt-2">Today Patients</h2>
+              <h2 className="text-xl font-bold mt-2">Total Patients</h2>
             </div>
             {totalPatients !== null ? (
               <p className="text-3xl font-semibold mt-4">{totalPatients}</p> 

@@ -7,7 +7,7 @@ const items= [
   { label: "Dashboard", icon: <ProjectOutlined/>, link: "/doctor" },
   { label: "Appointment", icon: <SolutionOutlined />, link: "/doctor/" },
   { label: "Patients", icon: <UserOutlined />, link: "/doctor/patients" },
-  { label: "Invoice  Report", icon: <UserOutlined />, link: "/doctor/Invoice/report" },
+ 
   { label: "Profile", icon: <ContainerOutlined/>, link: "/doctor/profile" },
   
 ];

@@ -4,7 +4,7 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
-  const isPublicPath = path === '/signIn'
+  const isPublicPath = path === '/'
 
     // Fetch the session token using next-auth/jwt
     const session = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
     }
   
 
-  // If the user is not signed in and tries to access a protected route, redirect to signIn page
+  // If the user is not signed in and tries to access a protected route, redirect to  page
   if (!isPublicPath && !session) {
-    return NextResponse.redirect(new URL('/signIn', request.nextUrl))
+    return NextResponse.redirect(new URL('/', request.nextUrl))
   }
 
   // If everything is fine, continue to the requested route
