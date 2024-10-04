@@ -12,7 +12,7 @@ type Patient = {
 
 const Home: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -34,9 +34,7 @@ const Home: React.FC = () => {
   return (
     <div className="mt-24 ml-0 lg:ml-60 w-full max-w-4xl lg:max-w-[calc(100%-15rem)] mx-auto p-5 rounded-lg">
       <h1 className="text-xl font-bold mb-5">Patients</h1>
-      {error ? (
-        <p className="text-red-600">{error}</p>
-      ) : (
+ 
         <Table>
           <TableCaption>A list of patients with active orders.</TableCaption>
           <TableHeader>
@@ -60,7 +58,7 @@ const Home: React.FC = () => {
             ))}
           </TableBody>
         </Table>
-      )}
+   
     </div>
   );
 };
