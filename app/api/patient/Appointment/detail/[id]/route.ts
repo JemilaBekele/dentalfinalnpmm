@@ -9,10 +9,7 @@ interface Appointment {
 }
 // Create a new medical finding
 export async function GET(request: NextRequest, { params }: { params: { patientId: string; recordId: string } }) {
-    const authrtoResponse = await authorizedMiddleware(request);
-    if (authrtoResponse) {
-      return authrtoResponse;
-    }
+   
   
     try {
       const { patientId, recordId } = params;
@@ -43,9 +40,8 @@ export async function GET(request: NextRequest, { params }: { params: { patientI
 
   
   export async function PATCH(request: NextRequest) {
-    const authResponse = await authorizedMiddleware(request);
-    if (authResponse) return authResponse;
-  
+    await authorizedMiddleware(request);
+    
     try {
       const body = await request.json(); // Parse the request body
       const { appointmentId, ...data } = body; // Extract appointmentId and updates
@@ -75,8 +71,8 @@ export async function GET(request: NextRequest, { params }: { params: { patientI
   
 
   export async function DELETE(request: NextRequest) {
-    const authResponse = await authorizedMiddleware(request);
-    if (authResponse) return authResponse; // Make sure to check the authorization response
+     await authorizedMiddleware(request);
+    // Make sure to check the authorization response
   
     try {
       // Parse the request body to get the appointmentId

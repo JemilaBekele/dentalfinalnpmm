@@ -11,10 +11,8 @@ interface Appointment {
 
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+   await authorizedMiddleware(request);
+  
 
   try {
     const { id } = params;
@@ -45,7 +43,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Check for user in request
     if (typeof request === 'object' && request !== null && 'user' in request) {
       const user = (request as { user: { id: string; username: string } }).user;
-      console.log("User Data:", user);
+      
 
       // Create new Appointment
      // const / = new Date(`${}T${}:00`); // Combine date and time
@@ -91,10 +89,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+  
 
   try {
     const { id } = params;

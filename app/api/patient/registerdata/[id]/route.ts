@@ -5,7 +5,7 @@ import {authorizedMiddleware} from "@/app/helpers/authentication"
 connect();
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  authorizedMiddleware(request);
+ 
     try {
      
       const { id } = params;

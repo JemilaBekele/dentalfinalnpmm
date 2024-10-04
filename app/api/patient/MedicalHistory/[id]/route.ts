@@ -9,10 +9,8 @@ interface MedicalFinding {
 }
 // Create a new medical finding 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+ await authorizedMiddleware(request);
+  
   
 
   try {
@@ -89,11 +87,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
-
+ 
   try {
     const { id } = params;
     if (!id) {

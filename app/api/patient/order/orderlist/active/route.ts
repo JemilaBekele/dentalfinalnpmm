@@ -1,13 +1,13 @@
 import { connect } from "@/app/lib/mongodb";
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 import Patient from "@/app/(models)/Patient";
 import Order from "@/app/(models)/Order";
-import { authorizedMiddleware } from "@/app/helpers/authentication";
+
 
 connect();
 
-export async function GET(request: NextRequest) {
-   await authorizedMiddleware(request);
+export async function GET() {
+  
   
 
   try {

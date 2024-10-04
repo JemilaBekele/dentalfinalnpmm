@@ -14,10 +14,8 @@ interface Image {
     // Add other fields as needed
   }
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-    const authResponse = await authorizedMiddleware(request);
-    if (authResponse) {
-        return authResponse;
-    }
+  await authorizedMiddleware(request);
+   
 
     try {
         const { id } = params;
@@ -79,11 +77,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-    const authResponse = await authorizedMiddleware(request);
-    if (authResponse) {
-        return authResponse;
-    }
-
+   
     try {
         const { id } = params;
         if (!id) {

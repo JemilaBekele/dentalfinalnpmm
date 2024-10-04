@@ -112,12 +112,8 @@ export async function POST(request: NextRequest) {
 
 
 
-export async function GET(request: NextRequest) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
-
+export async function GET() {
+ 
   try {
     // Find users with the role of 'doctor'
     const doctors = await User.find({ role: 'doctor' }, { username: 1, _id: 1 }).exec();

@@ -9,10 +9,7 @@ interface MedicalFinding {
 }
 // Create a new medical finding
 export async function GET(request: NextRequest, { params }: { params: { patientId: string; recordId: string } }) {
-    const authrtoResponse = await authorizedMiddleware(request);
-    if (authrtoResponse) {
-      return authrtoResponse;
-    }
+   
   
     try {
       const { patientId, recordId } = params;

@@ -1,12 +1,12 @@
 import { connect } from "@/app/lib/mongodb";
 import Patient from "@/app/(models)/Patient";
-import { NextRequest, NextResponse } from "next/server";
-import { authorizedMiddleware } from "@/app/helpers/authentication";
+import {NextResponse } from "next/server";
+
 
 connect();
 
-export async function GET(request: NextRequest) {
-  authorizedMiddleware(request);
+export async function GET() {
+  
   try {
     // Get the current date
     const currentDate = new Date();

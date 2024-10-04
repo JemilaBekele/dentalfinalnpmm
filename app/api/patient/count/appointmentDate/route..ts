@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 import Appointment from '@/app/(models)/appointment';
-import { authorizedMiddleware } from '@/app/helpers/authentication';
 
-export async function GET(request: NextRequest) {
-  await authorizedMiddleware(request);
-  console.log('GET request received')
+
+export async function GET() {
+  
   try {
     // Get today's date range
     const today = new Date();

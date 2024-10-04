@@ -1,15 +1,12 @@
-import { NextResponse,NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import Patient from "@/app/(models)/Patient";
 
 // Adjust the checkAuthenticationpath as needed
-import {authorizedMiddleware} from "@/app/helpers/authentication" // Assuming you have this for authorization
+ // Assuming you have this for authorization
 
 
-export async function GET(request: NextRequest) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+export async function GET() {
+ 
 
   try {
     // Fetch all patients from the database

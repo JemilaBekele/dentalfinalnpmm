@@ -11,10 +11,7 @@ import { connect } from "@/app/lib/mongodb";
 connect();
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const authResponse = await authorizedMiddleware(request);
-  if (authResponse) {
-    return authResponse;
-  }
+  
 
   const { id } = params; // Get the order ID from the URL params
 
