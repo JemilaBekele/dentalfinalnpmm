@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
      
 
       if (!activeOrders || activeOrders.length === 0) {
-        return NextResponse.json({ error: "No active orders found" }, { status: 404 });
+        return NextResponse.json({ message: "No active orders found" });
       }
 
       // Extract patient IDs from active orders
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       
 
       if (!patients || patients.length === 0) {
-        return NextResponse.json({ error: "Patients not found" }, { status: 404 });
+        return NextResponse.json({ message: "Patients not found" });
       }
 
       return NextResponse.json({
