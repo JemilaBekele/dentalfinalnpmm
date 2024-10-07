@@ -1,10 +1,10 @@
 import User from "@/app/(models)/User";
-import {NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
 
 connect();
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   
   try {
  // Use aggregation to count users for each role
