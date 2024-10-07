@@ -33,7 +33,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   ExtraoralExamination,
   Investigation,
   Assessment,
-  TreatmentPlan
+  TreatmentPlan,
+  TreatmentDone
       } = await request.json();
 
       const createdBy = {
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         Investigation,
         Assessment,
         TreatmentPlan,
+        TreatmentDone,
         patientId: { id: patient._id },
         createdBy,
       });

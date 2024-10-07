@@ -69,3 +69,46 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+ 
+
+  try {
+    const { id } = params;
+
+    if (!id) {
+      return NextResponse.json({ error: "Patient ID is required" }, { status: 400 });
+    }
+
+    // Find the patient by ID and populate Card
+    const patient = await Patient.findById(id).populate('Card').exec();
+    if (!patient) {
+      return NextResponse.json({ error: "Patient not found" });
+    }
+
+    // Log the patient's health information
+    console.log("Patient's Card:", patient.Card);
+
+    // If the patient has no medical findings, return an empty array
+    if (!patient.Card || patient.Card.length === 0) {
+      return NextResponse.json({ message: "No Card available for this patient", data: [] });
+    }
+
+    // Sort medical findings by createdAt field in descending order
+    const sortedFindingsCard = patient.Card.sort((a: Card, b: Card) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    // Return the sorted medical findings
+    return NextResponse.json({
+      message: "Card retrieved successfully",
+      success: true,
+      data: sortedFindingsCard,
+    });
+  } catch (error) {
+    console.error("Error retrieving Card:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

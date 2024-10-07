@@ -8,10 +8,8 @@ connect();
 
 export async function POST(request: NextRequest) {
   // Authorization Middleware
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse;
-  }
+await authorizedMiddleware(request);
+
 
   try {
     // Check if the request has a 'user' property
@@ -25,7 +23,7 @@ export async function POST(request: NextRequest) {
       console.log("Request Body:", reqBody);
 
       // Extract necessary fields from the body
-      const { cardno, firstname, age, sex, email, phoneNumber, description } = reqBody;
+      const { cardno, firstname, age, sex, phoneNumber, description,Town,KK,HNo } = reqBody;
 
       // Add createdBy field based on authenticated user
       reqBody.createdBy = {
@@ -45,20 +43,16 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "User with this card number already exists" }, { status: 400 });
       }
 
-      // Check for existing patient by email
-      const existingEmail = await Patient.findOne({ email });
-      if (existingEmail) {
-        return NextResponse.json({ error: "User with this email already exists" }, { status: 400 });
-      }
-
+     
       // Create new patient
       const newPatient = new Patient({
         cardno,
-        firstname,
-       
+        firstname,       
         age,
         sex,
-        email,
+        Town,
+        KK,
+        HNo ,
         phoneNumber,
         description,
         createdBy: reqBody.createdBy,

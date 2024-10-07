@@ -14,47 +14,47 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, invoiceId }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchInvoiceDetails = async () => {
+    const fetchInvoiceDetails = async (invoiceId: string) => {
       if (!invoiceId) {
-        console.warn("No invoiceId provided"); // Log warning
-        return; // Exit if no invoiceId
+        console.warn("No invoiceId provided");
+        return;
       }
-      
-      console.log("Fetching details for invoice ID:", invoiceId); // Log the ID being used
-  
+
+      console.log("Fetching details for invoice ID:", invoiceId);
+
       setLoading(true);
-      setError(null); // Clear previous errors
-  
+      setError(null);
+
       try {
-        const response = await axios.get(`/api/Invoice/payment/repodetail/${invoiceId}`, {
+        const response = await axios.get(`/api/Invoice/payment/repodetail?invoiceId=${invoiceId}`, {
           headers: {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.status === 200) {
           setInvoice(response.data); // Set invoice data
         } else {
           setError(response.data.error || "Failed to fetch invoice details.");
+          setInvoice(null); // Clear invoice if error occurs
         }
       } catch (err) {
         const errorMessage = axios.isAxiosError(err) && err.response
           ? err.response.data.error || "Failed to fetch invoice details. Please try again."
           : "Failed to fetch invoice details. Please try again.";
         setError(errorMessage);
+        setInvoice(null); // Clear invoice if error occurs
       } finally {
-        setLoading(false); // Always set loading to false
+        setLoading(false);
       }
     };
-  
-    if (isOpen) {
-      fetchInvoiceDetails(); // Fetch details only when modal is open
+
+    if (isOpen && invoiceId) {
+      fetchInvoiceDetails(invoiceId); // Pass the invoiceId when fetching
     }
   }, [isOpen, invoiceId]);
-  
 
   if (!isOpen) return null; // Don't render if modal is closed
-  if (loading) return <div className="loader">Loading...</div>; // Loading indicator
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -82,31 +82,35 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, invoiceId }) => {
         </button>
 
         <h2 className="text-xl font-bold text-center mb-6">Invoice Details</h2>
-
-        {error && <p className="text-red-600 text-center">{error}</p>}
-
-        {invoice && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <strong className="text-gray-700">Invoice ID:</strong>{' '}
-              <span className="text-gray-900">{invoice._id}</span>
+        
+        {loading ? (
+          <div className="text-center">Loading...</div> // Loading indicator inside the HTML
+        ) : error ? (
+          <div className="text-red-500 mb-2">{error}</div>
+        ) : (
+          invoice && (
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <strong className="text-gray-700">Invoice ID:</strong>{' '}
+                <span className="text-gray-900">{invoice._id}</span>
+              </div>
+              <div>
+                <strong className="text-gray-700">Invoice Date:</strong>{' '}
+                <span className="text-gray-900">{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
+              </div>
+              <div>
+                <strong className="text-gray-700">Total Amount:</strong>{' '}
+                <span className="text-gray-900">{invoice.totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="text-gray-600">Created By: Dr {invoice.createdBy.username}</div>
+              <div>
+                <strong className="text-gray-700">Status:</strong>{' '}
+                <span className={`text-sm font-bold py-1 px-3 rounded ${getStatusColor(invoice.status)}`}>
+                  {invoice.status}
+                </span>
+              </div>
             </div>
-            <div>
-              <strong className="text-gray-700">Invoice Date:</strong>{' '}
-              <span className="text-gray-900">{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
-            </div>
-            <div>
-              <strong className="text-gray-700">Total Amount:</strong>{' '}
-              <span className="text-gray-900">{invoice.totalAmount.toFixed(2)}</span>
-            </div>
-            <div className="text-gray-600">Created By: Dr {invoice.createdBy.username}</div>
-            <div>
-              <strong className="text-gray-700">Status:</strong>{' '}
-              <span className={`text-sm font-bold py-1 px-3 rounded ${getStatusColor(invoice.status)}`}>
-                {invoice.status}
-              </span>
-            </div>
-          </div>
+          )
         )}
 
         <h3 className="text-md font-semibold text-gray-800 border-b pb-2 mb-4">Items</h3>

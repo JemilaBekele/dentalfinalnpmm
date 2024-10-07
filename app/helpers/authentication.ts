@@ -17,7 +17,7 @@ export async function authorizedMiddleware(request: AuthenticatedRequest) {
     return NextResponse.json({ message: 'Unauthorized: No token provided' }, { status: 401 });
   }
 
-  console.log("Token Data:", token);
+
 
   request.user = {
     id: token.id as string,

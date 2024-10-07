@@ -1,14 +1,11 @@
 import User from "@/app/(models)/User";
 import {NextRequest, NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
-import {authorizedMiddleware} from "@/app/helpers/authentication"
+
 connect();
 
 export async function GET(request: NextRequest) {
-  const authrtoResponse = await authorizedMiddleware(request);
-  if (authrtoResponse) {
-    return authrtoResponse; // Unauthorized response
-  }
+  
   try {
  // Use aggregation to count users for each role
     const roleCounts = await User.aggregate([

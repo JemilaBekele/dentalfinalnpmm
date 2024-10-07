@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Spinner from "@/app/components/ui/Spinner";
-import Image from "next/image";
 
 type UserDetailsProps = {
   params: {
@@ -21,23 +20,19 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
     username: "",
     phone: "",
     role: "",
-    image: null as File | null, // To handle new image upload
   });
-  const [previewImage, setPreviewImage] = useState<string | null>(null); // New state for preview
 
   useEffect(() => {
     if (userId) {
       const fetchUser = async () => {
         try {
           setLoading(true);
-          const response = await axios.get(`/api/register/${userId}`);
+          const response = await axios.get(`/api/see/${userId}`);
           setFormData({
             username: response.data.username,
             phone: response.data.phone,
             role: response.data.role,
-            image: null,
           });
-          setPreviewImage(response.data.image || null); // Set existing image as preview
         } catch (err) {
           console.error("Error fetching user:", err);
           setError("Error fetching user details.");
@@ -50,61 +45,40 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
     }
   }, [userId]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    if (name === "image" && e.target instanceof HTMLInputElement) {
-      const inputElement = e.target;
-
-      if (inputElement.files && inputElement.files.length > 0) {
-        const file = inputElement.files[0]; // Get the file safely
-        setFormData((prevState) => ({
-          ...prevState,
-          image: file, // Set the selected file as the image
-        }));
-        setPreviewImage(URL.createObjectURL(file)); // Set image preview
-      }
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("username", formData.username);
-      formDataToSend.append("phone", formData.phone);
-      formDataToSend.append("role", formData.role);
-      if (formData.image) {
-        formDataToSend.append("image", formData.image);
-      }
+        const formDataToSend = new FormData();
+        formDataToSend.append("username", formData.username);
+        formDataToSend.append("phone", formData.phone);
+        formDataToSend.append("role", formData.role);
 
-      const response = await axios.put(`/api/register/${userId}`, formDataToSend);
+        const response = await axios.patch(`/api/see/${userId}`, formDataToSend);
 
-      if (response.status === 200) {
-        router.push("/admin");
-      } else {
-        console.error("Failed to update user.");
-        setError("Failed to update user.");
-      }
+        if (response.status === 200) {
+            router.push("/admin/users");
+        } else {
+            console.error("Failed to update user.");
+            setError("Failed to update user.");
+        }
     } catch (err) {
-      console.error("Error updating user:", err);
-      setError("Error updating user details.");
-    } finally {
-      setLoading(false);
+        console.error("Error updating user:", err);
+        setError( "Error updating user details.");
     }
-  };
+};
+
 
   if (loading) return <div className="text-center"><Spinner /></div>;
-
   if (error) return <p>{error}</p>;
 
   return (
@@ -154,21 +128,7 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
             />
           </div>
         </div>
-        <div className="w-full md:w-[48%]">
-          <label className="block mb-2" htmlFor="image">Profile Image</label>
-          <input
-            className="p-4 bg-[var(--bg)] text-[var(--text)] border-2 border-[#2e374a] rounded w-full"
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            onChange={handleChange}
-          />
-          {previewImage && (
-            <Image src={previewImage} alt="Image Preview"  width={100} // Desired width
-            height={200} className="mt-4 h-32 w-32 object-cover rounded-full" />
-          )}
-        </div>
+       
         <div className="flex justify-center mt-4">
           <button
             className="self-center mt-4 py-2 px-6 rounded-lg bg-gray-900 text-white shadow-md hover:shadow-lg hover:bg-gray-500 focus:opacity-85 active:opacity-85"

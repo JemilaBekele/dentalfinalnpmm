@@ -34,10 +34,11 @@ const RoleCountDisplay = () => {
   if (error) return <div>Error: {error}</div>;
 
  return (
-    <div className="mt-16 flex flex-wrap justify-center gap-4 p-4">
+    <div className="mt-6 flex flex-wrap justify-center gap-4 p-4">
       {roleCounts.map((roleCount) => (
         <div key={roleCount.role} className="bg-indigo-200 shadow-md rounded-lg p-6 w-60 text-center">
-          <h2 className="text-lg font-semibold text-gray-800 capitalize">{roleCount.role}</h2>
+          
+          <h2 className="text-lg font-semibold text-gray-700 capitalize">{roleCount.role}</h2>
           <p className="text-xl font-bold text-gray-600">{roleCount.count}</p>
         </div>
       ))}

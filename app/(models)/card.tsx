@@ -13,12 +13,7 @@ const CardSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide Patient name'],
       },
-  cardno: {
-          type: String,
-          required: [true, 'Please provide Patient name'],
-          unique: true,
-        },
-    
+  
   },
   cardprice: {
     type: Number,

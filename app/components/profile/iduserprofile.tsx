@@ -8,12 +8,13 @@ type User = {
   _id: string;
   username: string;
   phone: string;
-  role: string; // Add the role field
+  role: string;
+  image?: string; // Optional image field
 };
 
 type UserDetailsProps = {
   params: {
-    id: number;
+    id: string;
   };
 };
 
@@ -27,17 +28,20 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
   const [formData, setFormData] = useState({
     username: '',
     phone: '',
+    image: '' // Add image field
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     if (userId) {
       const fetchUser = async () => {
         try {
-          const response = await axios.get(`/api/register/${userId}`);
+          const response = await axios.get(`/api/see/${userId}`);
           setUser(response.data);
           setFormData({
             username: response.data.username,
             phone: response.data.phone,
+            image: response.data.image || '', // Set image if it exists
           });
         } catch (err) {
           console.error("Error fetching user:", err);
@@ -56,17 +60,36 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append('username', formData.username);
+    formDataToSubmit.append('phone', formData.phone);
+
+    if (selectedImage) {
+      formDataToSubmit.append('image', selectedImage); // Append image if selected
+    }
+
     try {
-      await axios.patch(`/api/register/${userId}`, formData);
+      await axios.patch(`/api/see/userupdate/${userId}`, formDataToSubmit, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       // Determine the dynamic route based on the user's role
       const roleBasedRoute = user?.role === "admin"
         ? `/admin/profile`
         : user?.role === "doctor"
         ? `/doctor/profile`
-        : `/user/profile`; // Default route for other roles
+        : `/reception/profile`;
 
       router.push(roleBasedRoute);
     } catch (err) {
@@ -76,12 +99,11 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
   };
 
   const handleCancel = () => {
-    // Determine the dynamic route based on the user's role
     const roleBasedRoute = user?.role === "admin"
       ? `/admin/profile`
       : user?.role === "doctor"
       ? `/doctor/profile`
-      : `/reception/profile`; // Default route for other roles
+      : `/reception/profile`;
 
     router.push(roleBasedRoute);
   };
@@ -92,7 +114,7 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center ">
-      <div className="max-w-lg w-full bg-gradient-to-r from-purple-200 via-pink-200 to-red-200 rounded-xl shadow-xl p-8">
+      <div className="max-w-md w-full bg-gradient-to-r from-white-200 via-blue-200 to-white-200 rounded-xl shadow-xl p-8">
         <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-6">Edit Profile</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-5">
@@ -121,6 +143,18 @@ const EditUser: React.FC<UserDetailsProps> = ({ params }) => {
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300"
               required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="block text-lg font-semibold text-gray-600 mb-2" htmlFor="image">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              name="image"
+              id="image"
+              onChange={handleImageChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-300"
             />
           </div>
 

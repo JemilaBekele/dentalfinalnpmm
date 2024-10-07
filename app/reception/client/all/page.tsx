@@ -16,7 +16,7 @@ interface Patient {
   lastname: string;
   age: number;
   phoneNumber: string;
-  email: string;
+ 
   sex: string;
 }
 
@@ -25,10 +25,10 @@ interface DataRow {
   ID: string;
   cardno: string;
   firstName: string;
- 
+  
   age: number;
   phoneNumber: string;
-  email: string;
+
   sex: string;
 }
 
@@ -39,7 +39,7 @@ const DataTable: React.FC = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch('/api/patient/registerdata', {
+        const response = await fetch('/api/patient/registerdata/lastthreeday', {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -54,7 +54,7 @@ const DataTable: React.FC = () => {
          
           age: patient.age,
           phoneNumber: patient.phoneNumber,
-          email: patient.email,
+          
           sex: patient.sex,
         })));
       } catch (error) {
@@ -67,22 +67,22 @@ const DataTable: React.FC = () => {
 
   const handleViewDetails = (row: DataRow) => {
     // Navigate to the patient details page or handle the view details logic
-    router.push(`/reception/client/${row.ID}`);
+    router.push(`/reception/card/all/${row.ID}`);
   };
 
   const columns: GridColDef[] = [
     { field: 'cardno', headerName: 'Card No', type: 'number', width: 120 },
     { field: 'firstName', headerName: 'firstName', type: 'string', width: 200 },
-    { field: 'email', headerName: 'Email', type: 'string', width: 200 },
-    { field: 'phoneNumber', headerName: 'Phone Number', type: 'string', width: 120 },
-    { field: 'sex', headerName: 'Sex', type: 'string', width: 120 },
+    { field: 'sex', headerName: 'Sex', type: 'string', width: 80 },
+    { field: 'phoneNumber', headerName: 'Phone Number', type: 'string', width: 150 },
+    
     { field: 'age', headerName: 'Age', type: 'number', width: 120 },  
    
     {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 250,
       getActions: (params: { row: DataRow }) => [
         <GridActionsCellItem
           key={`view-${params.row.id}`}

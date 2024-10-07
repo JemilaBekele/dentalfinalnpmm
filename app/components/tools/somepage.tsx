@@ -10,7 +10,7 @@ const items= [
   { label: "Patients", icon: <UserOutlined />, link: "/admin/Patient" },
   { label: "Services", icon: <ContainerOutlined/>, link: "/admin/Services" },
   { label: "Invoice  Report", icon: <FundOutlined />, link: "/admin/Invoice/report" },
-  { label: "Medical Material", icon: <UserOutlined />, link: "/admin/medicalMaterial" },
+ 
   { label: "Profile", icon: <ContainerOutlined/>, link: "/admin/profile" },
   
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import RoleCountDisplay from '../components/admin/count';
-import Component from '../components/admin/chart';
+import PatientDashboard from '@/app/components/admin/dashboard';
+
 import Spinner from '../components/ui/Spinner'; // Import Spinner component
 
 export default function Home() {
@@ -24,11 +24,9 @@ export default function Home() {
   // Once loading is complete, render the actual content
   return (
 
-    <div className='bg-gray-100'>
-      <RoleCountDisplay />
-      <div className="max-h-[70px] w-full">
-        <Component />
-      </div>
+    <div >
+      <PatientDashboard/>
+      
     </div>
   );
 }

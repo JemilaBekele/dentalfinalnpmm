@@ -7,7 +7,8 @@ export async function connect() {
         });
 
         const connection = mongoose.connection;
-
+// Set the maximum number of listeners to avoid memory leak warnings
+                connection.setMaxListeners(30);
         connection.on('connected', () => {
             console.log('MongoDB connected successfully');
         });

@@ -6,12 +6,20 @@ interface OrderUpdateModalProps {
   orderId: string;
 }
 
+type Doctor = {
+  _id: string;
+  username: string;
+};
+
 const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, orderId }) => {
   const [status, setStatus] = useState("");
+  const [doctors, setDoctors] = useState<Doctor[]>([]); // Changed to an array of Doctor
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [fetching, setFetching] = useState<boolean>(true);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
   // Fetch order details when the modal opens
   useEffect(() => {
     const fetchOrder = async () => {
@@ -31,8 +39,10 @@ const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, or
           throw new Error(data.error || "Failed to fetch order details");
         }
 
-        // Set the status from fetched order data
+        // Set the status and selected doctor from fetched order data
         setStatus(data.order.status);
+        const assignedDoctor = data.order.assignedDoctorTo;
+        setSelectedDoctor(assignedDoctor ? { _id: assignedDoctor.id, username: assignedDoctor.username } : null);
 
       } catch (err) {
         setError("Error fetching order data");
@@ -41,8 +51,23 @@ const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, or
       }
     };
 
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('/api/patient/doctor'); // Adjust the endpoint as needed
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch doctors");
+        }
+        setDoctors(data);
+      } catch (err) {
+        console.error("Error fetching doctors:", err);
+        setError("Error fetching doctors");
+      }
+    };
+
     if (isOpen) {
       fetchOrder();
+      fetchDoctors(); // Fetch doctors when the modal opens
     }
   }, [isOpen, orderId]);
 
@@ -50,21 +75,33 @@ const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, or
     setLoading(true);
     setError(null);
     
+    if (!selectedDoctor) {
+      setError("Please select a doctor before updating the order.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(`/api/patient/order/orderlist/active/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ orderId, status }), // Only send the status for update
+        body: JSON.stringify({ 
+          orderId, 
+          status, 
+          assignedDoctorTo: { 
+            id: selectedDoctor._id, // Valid doctor ID
+            username: selectedDoctor.username // Selected doctor's username
+          }
+        }),
       });
       
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to update order");
       }
-      setMessage({ text: "Invoice created successfully!", type: "success" });
-       // Optionally handle success feedback
+      setMessage({ text: "Order updated successfully!", type: "success" });
       onClose(); // Close the modal
     } catch (err) {
       setError("Error updating order");
@@ -91,10 +128,33 @@ const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, or
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="border rounded w-full p-2"
-                aria-label="Select order status" 
+                aria-label="Select order status"
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div className="mt-4">
+              <label className="block mb-2">Assign Doctor</label>
+              <select
+                id="doctor"
+                name="doctor"
+                aria-label="Select doctor" 
+                value={selectedDoctor?._id || ''}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const doctor = doctors.find(doctor => doctor._id === selectedId);
+                  setSelectedDoctor(doctor || null); // Set the selected doctor
+                }}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">Select a doctor</option>
+                {doctors.map(doctor => (
+                  <option key={doctor._id} value={doctor._id}>
+                    {doctor.username}
+                  </option>
+                ))}
               </select>
             </div>
           </>
@@ -110,10 +170,10 @@ const OrderUpdateModal: React.FC<OrderUpdateModalProps> = ({ isOpen, onClose, or
           </button>
         </div>
         {message && (
-                <p className={`mt-4 text-center ${message.type === "error" ? "bg-red-200 p-2 text-red-500" : "p-2 bg-green-300 text-green-500"}`}>
-                  {message.text}
-                </p>
-              )}
+          <p className={`mt-4 text-center ${message.type === "error" ? "bg-red-200 p-2 text-red-500" : "p-2 bg-green-300 text-green-500"}`}>
+            {message.text}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,13 +1,11 @@
 "use client";
 import React from "react";
 import SideNavbar from "./sidebar";
-import { ContainerOutlined, UserOutlined, ProjectOutlined, SolutionOutlined } from '@ant-design/icons';
+import { ContainerOutlined,  ProjectOutlined, SolutionOutlined } from '@ant-design/icons';
 
 const items= [
   { label: "Dashboard", icon: <ProjectOutlined/>, link: "/doctor" },
-  { label: "Appointment", icon: <SolutionOutlined />, link: "/doctor/" },
-  { label: "Patients", icon: <UserOutlined />, link: "/doctor/patients" },
- 
+  { label: "Appointment", icon: <SolutionOutlined />, link: "/doctor/allappointment" },
   { label: "Profile", icon: <ContainerOutlined/>, link: "/doctor/profile" },
   
 ];

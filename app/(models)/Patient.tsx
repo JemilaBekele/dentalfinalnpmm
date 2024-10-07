@@ -27,18 +27,22 @@ const patientSchema = new mongoose.Schema({
       enum: ['male', 'female'],
       required: [true, "Please provide a sex"],
     },
-    email: {
-      type: String,
-      match: [
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        'Please provide a valid email',
-      ],
-      unique: true,
-    },
+    
     phoneNumber: {
       type: String,
       unique: true,
     },
+    Town:{
+      type: String,
+    },
+     KK:{
+      type: String,
+
+     }, 
+    HNo:{
+      type: String,
+     },
+
     description: {
       type: String,
     },

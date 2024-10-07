@@ -7,9 +7,6 @@ import Order from "@/app/(models)/Order";
 connect();
 
 export async function GET() {
-  
-  
-
   try {
     const activeOrders = await Order.find({
       // Adjust field as needed
@@ -30,7 +27,7 @@ export async function GET() {
    
 
     // Fetch patients based on the extracted IDs
-    const patients = await Patient.find({ _id: { $in: patientIds } }).exec();
+    const patients = await Patient.find({ _id: { $in: patientIds } }).populate('Order').exec();
    
 
     // Return patients with their associated orders

@@ -1,11 +1,5 @@
 import {  NextResponse } from 'next/server';
-
 import User from "@/app/(models)/User";
-
-
-
-
-
 
 export async function GET() {
   try {

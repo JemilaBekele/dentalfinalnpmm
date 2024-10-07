@@ -67,7 +67,7 @@ const DataTable: React.FC = () => {
 
   const handleViewDetails = (row: DataRow) => {
     // Navigate to the patient details page or handle the view details logic
-    router.push(`/reception/client/${row.ID}`);
+    router.push(`/admin/finace/Invoice/all/${row.ID}`);
   };
 
   const columns: GridColDef[] = [

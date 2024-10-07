@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 
 type TreatmentPlan = {
-    teethWhitening?: boolean;
-    veneers?: boolean;
-    bonding?: boolean;
-    cosmeticContouring?: boolean;
-    gumContouring?: boolean;
-    compositeBonding?: boolean;
-    smileMakeovers?: boolean;
+    Extraction?: boolean;
+    Scaling?: boolean;
+    Rootcanal?: boolean;
+    Filling?: boolean;
+    Bridge?: boolean;
+    Crown?: boolean;
+    Apecectomy?: boolean;
+    Fixedorthodonticappliance?: boolean;
+    Removableorthodonticappliance?: boolean;
+    Removabledenture?: boolean;
     other?: string;
 };
 
@@ -31,6 +34,7 @@ type MedicalRecordData = {
     Investigation: string;
     Assessment: string;
     TreatmentPlan: TreatmentPlan | null;
+    TreatmentDone: TreatmentPlan | null;
     createdAt?: string;
     updatedAt?: string;
     createdBy?: { username: string };
@@ -42,6 +46,34 @@ interface EditMedicalRecordModalProps {
     onClose: () => void;
     onUpdate: (data: MedicalRecordData) => void;  
 }
+
+const TextArea: React.FC<{ id: string; label: string; value: string; onChange: (value: string) => void; placeholder: string; rows?: number }> = ({ id, label, value, onChange, placeholder, rows = 3 }) => (
+    <div className="mb-4">
+        <label className="block font-bold mb-2" htmlFor={id}>{label}</label>
+        <textarea
+            id={id}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="border p-2 rounded-md w-full"
+            placeholder={placeholder}
+            rows={rows}
+        />
+    </div>
+);
+
+const Input: React.FC<{ id: string; label: string; value: string; onChange: (value: string) => void; placeholder: string }> = ({ id, label, value, onChange, placeholder }) => (
+    <div className="mb-4">
+        <label className="block mb-2" htmlFor={id}>{label}</label>
+        <input
+            id={id}
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="border p-2 rounded-md w-full"
+            placeholder={placeholder}
+        />
+    </div>
+);
 
 const EditMedicalRecordModal: React.FC<EditMedicalRecordModalProps> = ({
     isOpen,
@@ -61,12 +93,22 @@ const EditMedicalRecordModal: React.FC<EditMedicalRecordModalProps> = ({
         setLocalData({ ...localData, [field]: value });
     };
 
-    const handleTreatmentChange = (field: keyof TreatmentPlan, value: boolean | string) => {
+    const handleTreatmentChange = (field: keyof TreatmentPlan, value: boolean | string, isDone: boolean = false) => {
         setLocalData((prevData) => ({
             ...prevData!,
-            TreatmentPlan: {
-                ...(prevData?.TreatmentPlan || {}),
+            [isDone ? 'TreatmentDone' : 'TreatmentPlan']: {
+                ...(prevData?.[isDone ? 'TreatmentDone' : 'TreatmentPlan'] || {}),
                 [field]: value,
+            },
+        }));
+    };
+
+    const handleOtherTreatmentChange = (isDone: boolean = false) => (value: string) => {
+        setLocalData((prevData) => ({
+            ...prevData!,
+            [isDone ? 'TreatmentDone' : 'TreatmentPlan']: {
+                ...(prevData?.[isDone ? 'TreatmentDone' : 'TreatmentPlan'] || {}),
+                other: value,
             },
         }));
     };
@@ -89,164 +131,158 @@ const EditMedicalRecordModal: React.FC<EditMedicalRecordModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 flex mt-13 items-center mt-14 justify-center bg-gray-200 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-200 bg-opacity-50">
             <div className="bg-white p-8 rounded-lg w-full max-w-2xl max-h-screen overflow-y-auto">
                 <h2 className="text-xl font-bold mb-4">Edit Medical Record</h2>
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Chief Complaint */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="chief-complaint">Chief Complaint</label>
-                        <textarea
-                            id="chief-complaint"
-                            value={localData.ChiefCompliance}
-                            onChange={(e) => handleChange("ChiefCompliance", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter chief complaint"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="chief-complaint"
+                        label="Chief Complaint"
+                        value={localData.ChiefCompliance}
+                        onChange={(value) => handleChange("ChiefCompliance", value)}
+                        placeholder="Enter chief complaint"
+                    />
+                    
                     {/* History of Present Illness */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="history-present-illness">History of Present Illness</label>
-                        <textarea
-                            id="history-present-illness"
-                            value={localData.Historypresent}
-                            onChange={(e) => handleChange("Historypresent", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter history of present illness"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="history-present-illness"
+                        label="History of Present Illness"
+                        value={localData.Historypresent}
+                        onChange={(value) => handleChange("Historypresent", value)}
+                        placeholder="Enter history of present illness"
+                    />
+
                     {/* Vital Signs */}
                     <div className="mb-4">
                         <label className="block font-bold mb-2" htmlFor="vital-sign">Vital Sign</label>
                         <div className="flex flex-col space-y-2">
-                        {["Core_Temperature", "Respiratory_Rate", "Blood_Oxygen", "Blood_Pressure", "heart_Rate"].map((vital) => (
-    <div key={vital}>
-        <label className="block mb-2" htmlFor={vital}>{vital.replace(/_/g, ' ')}</label>
-        <input
-            id={vital}
-            type="text"
-            value={localData.Vitalsign?.[vital as keyof Vitalsign] || ""}
-            onChange={(e) => handleVitalChange(vital as keyof Vitalsign, e.target.value)}
-            className="border p-2 rounded-md w-full"
-            placeholder={`Enter ${vital.replace(/_/g, ' ')}`}
-        />
-    </div>
-))}
+                            {["Core_Temperature", "Respiratory_Rate", "Blood_Oxygen", "Blood_Pressure", "heart_Rate"].map((vital) => (
+                                <Input
+                                    key={vital}
+                                    id={vital}
+                                    label={vital.replace(/_/g, ' ')}
+                                    value={localData.Vitalsign?.[vital as keyof Vitalsign] || ""}
+                                    onChange={(value) => handleVitalChange(vital as keyof Vitalsign, value)}
+                                    placeholder={`Enter ${vital.replace(/_/g, ' ')}`}
+                                />
+                            ))}
                         </div>
                     </div>
+
                     {/* Past Medical History */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="past-medical-history">Past Medical History</label>
-                        <textarea
-                            id="past-medical-history"
-                            value={localData.Pastmedicalhistory}
-                            onChange={(e) => handleChange("Pastmedicalhistory", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter past medical history"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="past-medical-history"
+                        label="Past Medical History"
+                        value={localData.Pastmedicalhistory}
+                        onChange={(value) => handleChange("Pastmedicalhistory", value)}
+                        placeholder="Enter past medical history"
+                    />
+                    
                     {/* Past Dental History */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="past-dental-history">Past Dental History</label>
-                        <textarea
-                            id="past-dental-history"
-                            value={localData.Pastdentalhistory}
-                            onChange={(e) => handleChange("Pastdentalhistory", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter past dental history"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="past-dental-history"
+                        label="Past Dental History"
+                        value={localData.Pastdentalhistory}
+                        onChange={(value) => handleChange("Pastdentalhistory", value)}
+                        placeholder="Enter past dental history"
+                    />
+                    
                     {/* Intra Oral Examination */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="intraoral-examination">Intra Oral Examination</label>
-                        <textarea
-                            id="intraoral-examination"
-                            value={localData.IntraoralExamination}
-                            onChange={(e) => handleChange("IntraoralExamination", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter intraoral examination"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="intraoral-examination"
+                        label="Intra Oral Examination"
+                        value={localData.IntraoralExamination}
+                        onChange={(value) => handleChange("IntraoralExamination", value)}
+                        placeholder="Enter intraoral examination"
+                    />
+
                     {/* Extra Oral Examination */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="extraoral-examination">Extra Oral Examination</label>
-                        <textarea
-                            id="extraoral-examination"
-                            value={localData.ExtraoralExamination}
-                            onChange={(e) => handleChange("ExtraoralExamination", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter extraoral examination"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="extraoral-examination"
+                        label="Extra Oral Examination"
+                        value={localData.ExtraoralExamination}
+                        onChange={(value) => handleChange("ExtraoralExamination", value)}
+                        placeholder="Enter extraoral examination"
+                    />
+                    
                     {/* Investigation */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="investigation">Investigation</label>
-                        <textarea
-                            id="investigation"
-                            value={localData.Investigation}
-                            onChange={(e) => handleChange("Investigation", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter investigation"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="investigation"
+                        label="Investigation"
+                        value={localData.Investigation}
+                        onChange={(value) => handleChange("Investigation", value)}
+                        placeholder="Enter investigation"
+                    />
+
                     {/* Assessment */}
-                    <div className="mb-4">
-                        <label className="block font-bold mb-2" htmlFor="assessment">Assessment</label>
-                        <textarea
-                            id="assessment"
-                            value={localData.Assessment}
-                            onChange={(e) => handleChange("Assessment", e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                            placeholder="Enter assessment"
-                            rows={3}
-                        />
-                    </div>
+                    <TextArea 
+                        id="assessment"
+                        label="Assessment"
+                        value={localData.Assessment}
+                        onChange={(value) => handleChange("Assessment", value)}
+                        placeholder="Enter assessment"
+                    />
                     
                     {/* Treatment Section */}
                     <div className="mb-4 col-span-2">
-    <label className="block font-bold mb-2">Treatment</label>
-    <div className="flex flex-col space-y-2">
-        {["teethWhitening", "veneers", "bonding", "cosmeticContouring", "gumContouring", "compositeBonding", "smileMakeovers"].map((treatment) => (
-            <label key={treatment}>
-                <input
-                    type="checkbox"
-                    checked={!!(localData.TreatmentPlan?.[treatment as keyof TreatmentPlan])}
-                    onChange={(e) => handleTreatmentChange(treatment as keyof TreatmentPlan, e.target.checked)}
-                />
-                {treatment.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
-            </label>
-        ))}
-        <div className="mt-2">
-            <label className="block mb-2" htmlFor="treatment-other">Other Treatments</label>
-            <input
-                id="treatment-other"
-                type="text"
-                value={localData.TreatmentPlan?.other || ""}
-                onChange={(e) => handleTreatmentChange("other", e.target.value)}
-                className="border p-2 rounded-md w-full"
-                placeholder="Enter other treatments"
-            />
-        </div>
-    </div>
-</div>
+                        <label className="block font-bold mb-2">Treatment Plan</label>
+                        <div className="flex flex-col space-y-2">
+                            {["Extraction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
+                                <div key={treatment} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={!!localData.TreatmentPlan?.[treatment as keyof TreatmentPlan]}
+                                        onChange={(e) => handleTreatmentChange(treatment as keyof TreatmentPlan, e.target.checked)}
+                                        className="mr-2"
+                                    />
+                                    <label className="font-bold">{treatment}</label>
+                                </div>
+                            ))}
+                            {/* Other treatment input */}
+                            <Input
+                                id="treatment-plan-other"
+                                label="Other Treatment"
+                                value={localData.TreatmentPlan?.other || ""}
+                                onChange={handleOtherTreatmentChange()}
+                                placeholder="Enter other treatments"
+                            />
+                        </div>
+                    </div>
 
-    
-                    <div className="flex justify-end col-span-2">
-                        <button type="button" onClick={onClose} className="mr-4 text-red-600">Cancel</button>
-                        <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Update</button>
+                    <div className="mb-4 col-span-2">
+                        <label className="block font-bold mb-2">Treatment Done</label>
+                        <div className="flex flex-col space-y-2">
+                            {["Extraction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
+                                <div key={treatment} className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={!!localData.TreatmentDone?.[treatment as keyof TreatmentPlan]}
+                                        onChange={(e) => handleTreatmentChange(treatment as keyof TreatmentPlan, e.target.checked, true)}
+                                        className="mr-2"
+                                    />
+                                    <label className="font-bold">{treatment}</label>
+                                </div>
+                            ))}
+                            {/* Other treatment input for Treatment Done */}
+                            <Input
+                                id="treatment-done-other"
+                                label="Other Treatment Done"
+                                value={localData.TreatmentDone?.other || ""}
+                                onChange={handleOtherTreatmentChange(true)}
+                                placeholder="Enter other treatments done"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end mt-4 col-span-2">
+                        <button type="button" onClick={onClose} className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2 hover:bg-gray-600">Cancel</button>
+                        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Update</button>
                     </div>
                 </form>
             </div>
         </div>
     );
-    
 };
 
 export default EditMedicalRecordModal;

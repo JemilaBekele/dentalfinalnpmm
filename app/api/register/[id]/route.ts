@@ -2,26 +2,25 @@ import User from "@/app/(models)/User";
 import {connect} from "@/app/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import {authorizedMiddleware} from "@/app/helpers/authentication"
-import bcrypt from "bcrypt";
-import fs from "fs";
-import path from "path";
+
+
 
 
 connect(); 
 
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
 
     try {
      
-      const { id } = params;
+      const { userId } = params;
       
       
-      if (!id) {
+      if (!userId) {
         return NextResponse.json({ error: "User ID is required" }, { status: 400 });
       }
   
-      const user = await User.findById({ _id: id });
+      const user = await User.findById({ _id: userId });
   
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -58,33 +57,32 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
   }
 
-  export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  export async function PATCH(req: NextRequest, { params }: { params: { userId: string } }) {
     try {
-      const { id } = params;
+      const { userId } = params;
       
       // Ensure the ID is provided
-      if (!id) {
-        return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      if (!userId) {
+        return NextResponse.json({ error: "User userId is required" }, { status: 400 });
       }
   
       // Parse incoming FormData
       const data = await req.formData();
   
       // Find the user to update
-      const user = await User.findById(id);
+      const user = await User.findById(userId);
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
   
       // Initialize fields to update with proper types
-      const updates: Partial<{ username: string; phone: string; role: string; password: string; image: string }> = {};
+      const updates: Partial<{ username: string; phone: string; role: string; }> = {};
   
       // Update fields from FormData
       const username = data.get("username") as string | null;
       const phone = data.get("phone") as string | null;
       const role = data.get("role") as string | null;
-      const password = data.get("password") as string | null;
-      const imageFile = data.get("image") as File | null;
+     
   
       if (username) updates.username = username;
       if (phone) {
@@ -97,22 +95,13 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       }
       if (role) updates.role = role;
   
-      // If password is provided, hash it before saving
-      if (password) {
-        const hashPassword = await bcrypt.hash(password, 10);
-        updates.password = hashPassword;
-      }
+      
   
       // Handle image upload
-      if (imageFile && imageFile instanceof File) {
-        const imagePath = path.join("public/uploads", imageFile.name);
-        const buffer = Buffer.from(await imageFile.arrayBuffer());
-        await fs.promises.writeFile(imagePath, buffer);
-        updates.image = `/uploads/${imageFile.name}`; // Set the relative path
-      }
+     
   
       // Update the user in the database
-      const updatedUser = await User.findByIdAndUpdate(id, updates, {
+      const updatedUser = await User.findByIdAndUpdate(userId, updates, {
         new: true,
         runValidators: true,
       });

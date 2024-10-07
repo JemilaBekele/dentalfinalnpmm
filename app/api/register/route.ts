@@ -2,8 +2,8 @@ import User from "@/app/(models)/User";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { connect } from "@/app/lib/mongodb";
-import fs from "fs";
-import path from "path";
+import { authorizedMiddleware } from "@/app/helpers/authentication";
+import { uploadImage } from '@/app/helpers/imageUploader';
 
 connect();
 
@@ -23,10 +23,12 @@ export const config = {
   },
 };
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
+    await authorizedMiddleware(request);
+
     // Use FormData in client-side to send the image along with the user data
-    const data = await req.formData();
+    const data = await request.formData();
 
     const userData: UserData = {
       username: data.get("username") as string,
@@ -54,10 +56,9 @@ export async function POST(req: NextRequest) {
     // Handle image upload if exists
     const imageFile = data.get("image");
     if (imageFile && imageFile instanceof File) {
-      const imagePath = path.join("public/uploads", imageFile.name);
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      await fs.promises.writeFile(imagePath, buffer);
-      userData.image = `/uploads/${imageFile.name}`; // Set the relative path
+      // Use the uploadImage helper to handle the image file
+      const imagePath = await uploadImage(imageFile);
+      userData.image = imagePath; // Set the relative path of the uploaded image
     }
 
     // Create new user
