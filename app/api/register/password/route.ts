@@ -13,11 +13,7 @@ interface PasswordChangeData {
   userId: string; // Changed from phone to userId
 }
 
-export const config = {
-  api: {
-    bodyParser: false, // Use formData or JSON based on client-side implementation
-  },
-};
+
 
 export async function POST(request: NextRequest) {
   try {

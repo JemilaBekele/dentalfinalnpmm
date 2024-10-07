@@ -13,12 +13,7 @@ interface UserUpdateData {
   image?: string;    // Optional, since it's a partial update
 }
 
-// Ensure Next.js does not parse the body automatically
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
     try {

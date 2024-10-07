@@ -12,11 +12,7 @@ interface PasswordResetData {
   userId: string; // User ID whose password will be reset
 }
 
-export const config = {
-  api: {
-    bodyParser: true, // Assuming JSON is sent
-  },
-};
+
 
 export async function POST(request: NextRequest) {
   try {

@@ -16,12 +16,7 @@ interface UserData {
   image?: string; // Optional image field
 }
 
-// Ensure Next.js does not parse the body automatically
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+
 
 export async function POST(request: NextRequest) {
   try {

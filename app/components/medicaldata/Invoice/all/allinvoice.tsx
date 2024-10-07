@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Ensures this component is client-side rendered
 
 import React, { useEffect, useState, useMemo } from "react";
 import PatientComponent from "@/app/components/patient/PatientComponent";
@@ -10,6 +10,7 @@ import { Invoice } from "@/types/invotwo";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from 'next-auth/react';
+
 type InvoiceFormProps = {
   params: {
     id: string;
@@ -39,27 +40,29 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const role = useMemo(() => session?.user?.role || '', [session]); 
-  // Move the fetchInvoices function here so it can be reused
-  const fetchInvoices = async () => {
-    try {
-      const response = await fetch(`/api/Invoice/payment/${patientId}`);
-      const data = await response.json();
-      if (response.ok) {
-        setInvoices(data.data);
-      } else {
-        setError(data.error || "Failed to fetch invoices");
-      }
-    } catch (error) {
-      setError("Failed to fetch invoices");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+  const role = useMemo(() => session?.user?.role || '', [session]);
 
   useEffect(() => {
+    // Define the fetchInvoices function inside useEffect to avoid redeclaration on every render
+    const fetchInvoices = async () => {
+      try {
+        const response = await fetch(`/api/Invoice/payment/${patientId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setInvoices(data.data);
+        } else {
+          setError(data.error || "Failed to fetch invoices");
+        }
+      } catch (error) {
+        setError("Failed to fetch invoices");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchInvoices();
-  }, [patientId]);
+  }, [patientId]); // patientId is a dependency since it may change
 
   const handleEdit = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
@@ -78,48 +81,61 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
     setModalVisible(false);
 
     // Re-fetch invoices after updating
+    const fetchInvoices = async () => {
+      try {
+        const response = await fetch(`/api/Invoice/payment/${patientId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setInvoices(data.data);
+        } else {
+          setError(data.error || "Failed to fetch invoices");
+        }
+      } catch (error) {
+        setError("Failed to fetch invoices");
+      }
+    };
     fetchInvoices();
   };
 
   const handleDelete = async (invoiceId: string) => {
     const confirmDelete = async () => {
-    try {
-      const response = await axios.delete(`/api/Invoice/payment/detail/${invoiceId}`, {
-        data: { invoiceId },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      try {
+        const response = await axios.delete(`/api/Invoice/payment/detail/${invoiceId}`, {
+          data: { invoiceId },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (response.data.success) {
-        setInvoices((prevInvoices) =>
-          prevInvoices.filter((invoice) => invoice._id !== invoiceId)
-        );
-        
-      } else {
-        console.error("Error deleting user:");
+        if (response.data.success) {
+          setInvoices((prevInvoices) =>
+            prevInvoices.filter((invoice) => invoice._id !== invoiceId)
+          );
+        } else {
+          console.error("Error deleting user:");
+        }
+      } catch (err) {
+        setError("Error deleting record: ");
+      } finally {
+        toast.dismiss(); // Dismiss the confirmation toast after the operation
       }
-    } catch (err) {
-      setError("Error deleting record: ");
-    }finally {
-      toast.dismiss(); // Dismiss the confirmation toast after the operation
-    }
-  }
-  toast.warn(
-    <div>
-      <span>Are you sure you want to delete this Invoice?</span>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-        <button onClick={() => confirmDelete()}>Yes</button>
-        <button onClick={() => toast.dismiss()}>No</button>
-      </div>
-    </div>,
-    {
-      position: "top-right",
-      autoClose: false,
-      closeOnClick: false,
-      draggable: false,
-    }
-  );
+    };
+
+    toast.warn(
+      <div>
+        <span>Are you sure you want to delete this Invoice?</span>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
+          <button onClick={() => confirmDelete()}>Yes</button>
+          <button onClick={() => toast.dismiss()}>No</button>
+        </div>
+      </div>,
+      {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+      }
+    );
   };
 
   if (loading) {
@@ -149,24 +165,21 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700">Invoices</h2>
                 {role === 'admin' && (
-                <>
-                 <Link
-                  href={`/admin/finace/Invoice/add/${patientId}`}
-                  className="bg-green-500 text-white mb-4 px-4 py-2 rounded-md hover:bg-green-600"
-                >
-                  New Invoice +
-                </Link>
-                </>
-              )}
-              {role === 'doctor' && (
-                <>
-                <Link
-                  href={`/doctor/Invoice/add/${patientId}`}
-                  className="bg-green-500 text-white mb-4 px-4 py-2 rounded-md hover:bg-green-600"
-                >
-                  New Invoice +
-                </Link></>
-              )}
+                  <Link
+                    href={`/admin/finace/Invoice/add/${patientId}`}
+                    className="bg-green-500 text-white mb-4 px-4 py-2 rounded-md hover:bg-green-600"
+                  >
+                    New Invoice +
+                  </Link>
+                )}
+                {role === 'doctor' && (
+                  <Link
+                    href={`/doctor/Invoice/add/${patientId}`}
+                    className="bg-green-500 text-white mb-4 px-4 py-2 rounded-md hover:bg-green-600"
+                  >
+                    New Invoice +
+                  </Link>
+                )}
               </div>
               {invoices.length === 0 ? (
                 <p className="text-center text-gray-500">No invoices available for this patient.</p>
@@ -177,7 +190,6 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
                       key={invoice._id}
                       className="p-6 border rounded-lg shadow bg-gray-50 hover:shadow-lg transition-shadow relative"
                     >
-                      {/* Edit and Delete icons */}
                       <div className="absolute top-2 right-2 space-x-2">
                         <EditOutlined
                           onClick={() => handleEdit(invoice)}
@@ -192,7 +204,6 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mb-4">
-                        
                         <div>
                           <strong className="text-gray-700">Invoice Date:</strong>{" "}
                           <span className="text-gray-900">
@@ -204,7 +215,7 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
                           <span className="text-gray-900">${invoice.totalAmount.toFixed(2)}</span>
                         </div>
                         <div>
-                          <strong className="text-gray-700">Total paid Paid:</strong>{" "}
+                          <strong className="text-gray-700">Total Paid:</strong>{" "}
                           <span className="text-gray-900">${invoice.totalpaid.toFixed(2)}</span>
                         </div>
                         <div>
@@ -215,50 +226,25 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
                           <strong className="text-gray-700">Current Payment:</strong>{" "}
                           <span className="text-gray-900">${invoice.currentpayment.amount.toFixed(2)}</span>
                         </div>
-                        <div className="text-gray-700 capitalize">
-                        <strong className="text-gray-700">Created By: Dr</strong>{" "}
-                        <span className="text-gray-900">{invoice.createdBy ? invoice.createdBy.username : "Unknown"}</span>
-                                   
-                         </div>
+                        <div>
+                          <strong className="text-gray-700">Created By:</strong>{" "}
+                          <span className="text-gray-900">{invoice.createdBy?.username || "Unknown"}</span>
+                        </div>
                         <div>
                           <strong className="text-gray-700">Status:</strong>{" "}
-                          <span
-                            className={`text-sm font-bold py-1 px-3 rounded ${getStatusColor(
-                              invoice.status
-                            )}`}
-                          >
+                          <span className={`text-sm font-bold py-1 px-3 rounded ${getStatusColor(invoice.status)}`}>
                             {invoice.status}
                           </span>
                         </div>
-                        
                       </div>
-                     
 
-                      <h3 className="font-semibold mt-4 text-gray-800">Items</h3>
-                      <div className="overflow-y-auto h-32">
-                        <ul className="space-y-3">
-                          {invoice.items.map((item, index) => (
-                            <li
-                              key={index}
-                              className="flex justify-between items-start bg-gray-100 p-3 rounded-lg shadow-sm"
-                            >
-                              <div>
-                                <div className="font-medium text-gray-800">
-                                  {item.service.service} (x{item.quantity})
-                                </div>
-                                <div className="text-gray-600">Description: {item.description}</div>
-                                <div className="text-gray-600">
-                                  Price per unit: ${item.price.toFixed(2)}
-                                </div>
-                                
-                              </div>
-                              <span className="text-lg font-bold text-gray-800">
-                                ${item.totalPrice.toFixed(2)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <InvoiceEditModal
+                        visible={isModalVisible}
+                        onClose={() => setModalVisible(false)}
+                        invoice={selectedInvoice}
+                        onSave={handleSave}
+                        patientId={patientId}
+                      />
                     </div>
                   ))}
                 </div>
@@ -267,17 +253,7 @@ export default function InvoiceAll({ params }: InvoiceFormProps) {
           </div>
         </div>
       </div>
-
-      {/* InvoiceEditModal Integration */}
-      {selectedInvoice && (
-        <InvoiceEditModal
-          visible={isModalVisible}
-          onClose={() => setModalVisible(false)}
-          invoice={selectedInvoice}
-          onSave={handleSave}
-          patientId={patientId}
-        />
-      )}      <ToastContainer />
+      <ToastContainer />
     </div>
   );
 }
