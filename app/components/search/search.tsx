@@ -33,7 +33,7 @@ const UsersPage: React.FC = () => {
 
   useEffect(() => {
     if (!search) {
-      setError("Please provide a Card ID or First Name in the search.");
+      setError("Please provide a Phone Number or First Name in the search.");
       return;
     }
 
@@ -65,7 +65,7 @@ const UsersPage: React.FC = () => {
       {error && <div className="error">{error}</div>}
       {users.length > 0 && (
         <Table>
-          <TableCaption>A list of users.</TableCaption>
+          <TableCaption>A list of Patients.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Card No</TableHead>
