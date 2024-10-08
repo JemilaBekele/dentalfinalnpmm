@@ -51,6 +51,14 @@ const UnconfirmedInvoices: React.FC = () => {
 
   useEffect(() => {
     fetchUnconfirmedInvoices(); // Fetch on component mount
+
+    // Set an interval to fetch invoices every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchUnconfirmedInvoices();
+    }, 60000); // 30000 ms = 30 seconds
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const openModal = (invoice: Invoice) => {

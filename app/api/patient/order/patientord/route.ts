@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Patient from "@/app/(models)/Patient";
 
-export async function GET(request: NextRequest) {
- 
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const phoneNumber = searchParams.get('phoneNumber');
-    const cardno = searchParams.get('cardno');
-  
-    console.log('Received Query Parameters:', { phoneNumber, cardno });
-  
+    const body = await request.json();
+    const { phoneNumber, cardno } = body;
+
+    console.log('Received Body Parameters:', { phoneNumber, cardno });
+
     if (!phoneNumber && !cardno) {
       return NextResponse.json({ error: 'phoneNumber or Card ID is required' }, { status: 400 });
     }

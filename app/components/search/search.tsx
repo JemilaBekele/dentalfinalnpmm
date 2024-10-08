@@ -1,10 +1,8 @@
-"use client";
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo  } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { CodeOutlined } from '@ant-design/icons';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from "next/navigation";
 
@@ -18,13 +16,21 @@ type User = {
 };
 
 const UsersPage: React.FC = () => {
-    const { data: session } = useSession(); 
+  const { data: session } = useSession(); 
   const searchParams = useSearchParams();
-  const search = searchParams.get("search"); // Get the 'search' query parameter
+  const search = searchParams.get("search");
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-  const [, setError] = useState<string | null>(null);
-  const role = useMemo(() => session?.user?.role || '', [session]); 
+  const [error, setError] = useState<string | null>(null);
+  const role = useMemo(() => session?.user?.role || '', [session]);
+
+  // Define the role to route mapping here
+  const roleToRouteMap: { [key: string]: string } = {
+    admin: '/admin/medicaldata/medicalhistory/all/{patientId}',
+    doctor: '/doctor/medicaldata/medicalhistory/all/{patientId}',
+    reception: '/reception/card/all/{patientId}',
+  };
+
   useEffect(() => {
     if (!search) {
       setError("Please provide a Card ID or First Name in the search.");
@@ -33,82 +39,54 @@ const UsersPage: React.FC = () => {
 
     const fetchUsers = async () => {
       try {
-        // Decide which parameter to use based on the input format
-        const isphoneNumber= /^\d+$/.test(search); // Assuming cardno is numeric
-        const endpoint = isphoneNumber
+        const isPhoneNumber = /^\d+$/.test(search);
+        const endpoint = isPhoneNumber
           ? `/api/patient/registerdata/search?phoneNumber=${search}`
           : `/api/patient/registerdata/search?firstname=${search}`;
 
-        const response = await axios.get(endpoint);
-
-        // Ensure the response data is an array
+        const response = await axios.get<User[]>(endpoint); // Specify the type here
         if (Array.isArray(response.data)) {
           setUsers(response.data);
         } else {
           setError('Unexpected data format received from server');
         }
       } catch (error) {
-        console.error("Error fetching users:", );
+        console.error("Error fetching users:", error);
         setError('An error occurred while fetching patients');
       }
     };
 
     fetchUsers();
   }, [search]);
-  const handleViewMedicalHistory = (patientId: string | undefined) => {
-    if (patientId) {
-        {role === 'admin' && (
-      router.push(`/admin/medicaldata/medicalhistory/all/${patientId}`))}
-        {role === 'doctor' && (
-          router.push(`/doctor/medicaldata/medicalhistory/all/${patientId}`))}
-        {role === 'reception' && (
-            router.push(`/reception/card/all/${patientId}`))}
-    } else {
-      console.error('Invalid patient ID');
-    }
-  };
+
   return (
-    <div className="mt-24 ml-0 lg:ml-60 w-full max-w-4xl lg:max-w-[calc(100%-15rem)] mx-auto p-5 rounded-lg">
-      <h1 className="text-xl font-bold mb-5">Patients</h1>
-      
+    <div>
+      {error && <div className="error">{error}</div>}
+      {users.length > 0 && (
         <Table>
-          <TableCaption>A list of patients with active orders.</TableCaption>
+          <TableCaption>A list of users.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Firstname</TableHead>
-              <TableHead>Sex</TableHead>
+              <TableHead>Card No</TableHead>
+              <TableHead>First Name</TableHead>
               <TableHead>Age</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead>Sex</TableHead>
+              <TableHead>Phone Number</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4}>No patients found.</TableCell>
+            {users.map(user => (
+              <TableRow key={user._id} onClick={() => router.push(roleToRouteMap[role].replace('{patientId}', user._id))}>
+                <TableCell>{user.cardno}</TableCell>
+                <TableCell>{user.firstname}</TableCell>
+                <TableCell>{user.age}</TableCell>
+                <TableCell>{user.sex}</TableCell>
+                <TableCell>{user.phoneNumber}</TableCell>
               </TableRow>
-            ) : (
-              users.map(({ _id, firstname, sex, age }) => (
-                <TableRow key={_id}>
-                  <TableCell>{firstname}</TableCell>
-                  <TableCell>{sex}</TableCell>
-                  <TableCell>{age}</TableCell>
-                  <TableCell>
-                    <button
-                      onClick={() =>
-                        handleViewMedicalHistory(_id)
-                      }
-                      className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-600"
-                      aria-label="MedicalHistory"
-                    >
-                      <CodeOutlined />
-                    </button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
         </Table>
-     
+      )}
     </div>
   );
 };

@@ -1,18 +1,14 @@
 "use client";
 
 import UsersPage from '@/app/components/search/search'
-
- 
-
+import { Suspense } from 'react';
 
 export default function Home() {
- 
-  // Once loading is complete, render the actual content
   return (
-
-    <div >
-      <UsersPage/>
-      
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <UsersPage />
+      </Suspense>
     </div>
   );
 }

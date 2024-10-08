@@ -87,33 +87,45 @@ export default function MedicalFindingForm({ params }: MedicalFindingFormProps) 
   };
 
   // Helper function to display only true treatment values
-  const renderTreatment = (treatmentPlan: TreatmentPlan | null, treatmentDone: TreatmentPlan | null) => {
-    const formatTreatment = (treatment: TreatmentPlan | null) => {
-      if (!treatment) return "No Treatment";  // Check for null treatment
-  
-      const trueTreatments = Object.keys(treatment)
-        .filter((key) => treatment[key as keyof TreatmentPlan] === true)
-        .map((key) => key.replace(/([A-Z])/g, ' $1').trim());
-  
-      // If there are no true treatments and no 'other' specified
-      if (trueTreatments.length === 0 && !treatment.other) return "No Treatment";
-  
-      // Add 'other' to the treatments if it exists
-      if (treatment.other) {
-        trueTreatments.push(`Other: ${treatment.other}`);
-      }
-  
-      return trueTreatments.join(", ");
-    };
-  
-    const plan = formatTreatment(treatmentPlan);
-    const done = formatTreatment(treatmentDone);
-  
-    return `
-      <strong>Treatment Plan:</strong><br>${plan !== "No Treatment" ? plan : "No Treatment"}<br>
-      <strong>Treatment Done:</strong><br>${done !== "No Treatment" ? done : "No Treatment"}
-    `;
+ // Helper function to display only true treatment values
+ const renderTreatment = (treatmentPlan: TreatmentPlan | null, treatmentDone: TreatmentPlan | null) => { 
+  const formatTreatment = (treatment: TreatmentPlan | null) => {
+    if (!treatment) return "No Treatment"; // Check for null treatment
+
+    const trueTreatments = Object.keys(treatment)
+      .filter((key) => treatment[key as keyof TreatmentPlan] === true)
+      .map((key) => key.replace(/([A-Z])/g, ' $1').trim());
+
+    // If there are no true treatments and no 'other' specified
+    if (trueTreatments.length === 0 && !treatment.other) return "No Treatment";
+
+    // Add 'other' to the treatments if it exists
+    if (treatment.other) {
+      trueTreatments.push(`Other: ${treatment.other}`);
+    }
+
+    // Format treatments with correct spacing
+    const formattedTreatments = trueTreatments.map(treatment => {
+      // Adding spaces between the words for specific treatments
+      return treatment
+        .replace("Fixedorthodonticappliance", "Fixed orthodontic appliance")
+        .replace("Removableorthodonticappliance", "Removable orthodontic appliance")
+        .replace("Removabledenture", "Removable denture");
+    });
+
+    return formattedTreatments.join(", "); // Join treatments with a comma and space
   };
+
+  const plan = formatTreatment(treatmentPlan);
+  const done = formatTreatment(treatmentDone);
+
+  return `
+    <strong>Treatment Plan:</strong><br>${plan !== "No Treatment" ? plan : "No Treatment"}<br>
+    <strong>Treatment Done:</strong><br>${done !== "No Treatment" ? done : "No Treatment"}
+  `;
+};
+
+
   
   
 

@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 type Patient = {
   _id: string;
   phoneNumber: string;
-  firstname: string
- 
+  firstname: string;
 };
 
 type Doctor = {
@@ -19,8 +18,8 @@ const OrderForm = () => {
   const [searchType, setSearchType] = useState<string>('phoneNumber');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [doctors, setDoctors] = useState<Doctor[]>([]); // Change to Doctor[]
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null); // Ensure this is Doctor | null
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [status, setStatus] = useState<string>('Active');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -32,7 +31,7 @@ const OrderForm = () => {
         const response = await fetch(`/api/patient/doctor`);
         const data = await response.json();
         if (response.ok) {
-          setDoctors(data); // Ensure data is set as Doctor[]
+          setDoctors(data);
         } else {
           setError('Failed to fetch doctors');
         }
@@ -51,10 +50,20 @@ const OrderForm = () => {
     }
 
     try {
-      const response = await fetch(`/api/patient/order/patientord?${searchType}=${encodeURIComponent(searchValue)}`);
+      const response = await fetch(`/api/patient/order/patientord`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          [searchType]: searchValue,
+        }),
+      });
+      
       const data = await response.json();
       if (response.ok) {
         setPatients(Array.isArray(data) ? data : [data]);
+        setError(null);
       } else {
         setError(data.error || 'Failed to fetch patients');
       }
@@ -74,7 +83,7 @@ const OrderForm = () => {
       setError('Please select a doctor');
       return;
     }
-         
+
     try {
       const response = await fetch(`/api/patient/order`, {
         method: 'POST',
@@ -82,8 +91,8 @@ const OrderForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          patientId: selectedPatient?._id || '',
-          assignedDoctorId: selectedDoctor?._id || '',
+          patientId: selectedPatient._id,
+          assignedDoctorId: selectedDoctor._id,
           status: status,
         }),
       });
@@ -128,7 +137,7 @@ const OrderForm = () => {
 
           <div className="mb-4">
             <label htmlFor="searchValue" className="block text-sm font-medium text-gray-700">
-              {searchType === 'phoneNumber' ? 'Search Patient by phoneNumber' : 'Search Patient by Card ID'}
+              {searchType === 'phoneNumber' ? 'Search Patient by Phone Number' : 'Search Patient by Card ID'}
             </label>
             <input
               id="searchValue"
@@ -163,7 +172,7 @@ const OrderForm = () => {
                 <option value="">Select a patient</option>
                 {patients.map(patient => (
                   <option key={patient._id} value={patient._id}>
-                    {patient.firstname} 
+                    {patient.firstname}
                   </option>
                 ))}
               </select>
@@ -173,28 +182,27 @@ const OrderForm = () => {
           <div className="mb-4">
             <label htmlFor="doctor" className="block text-sm font-medium text-gray-700">Select Doctor</label>
             <select
-  id="doctor"
-  name="doctor"
-  value={selectedDoctor?._id || ''}
-  onChange={(e) => {
-    const selectedId = e.target.value;
-    const doctor = doctors.find(doctor => doctor._id === selectedId);
-    if (doctor) {
-      setSelectedDoctor(doctor);
-    } else {
-      setError('No doctor found');
-    }
-  }}
-  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
->
-  <option value="">Select a doctor</option>
-  {doctors.map(doctor => (
-    <option key={doctor._id} value={doctor._id}>
-      {doctor.username}
-    </option>
-  ))}
-</select>
-
+              id="doctor"
+              name="doctor"
+              value={selectedDoctor?._id || ''}
+              onChange={(e) => {
+                const selectedId = e.target.value;
+                const doctor = doctors.find(doctor => doctor._id === selectedId);
+                if (doctor) {
+                  setSelectedDoctor(doctor);
+                } else {
+                  setError('No doctor found');
+                }
+              }}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="">Select a doctor</option>
+              {doctors.map(doctor => (
+                <option key={doctor._id} value={doctor._id}>
+                  {doctor.username}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-4">

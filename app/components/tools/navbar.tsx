@@ -8,23 +8,23 @@ import Image from 'next/image';
 
 const Navbar = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
 
   // Memoize session data to avoid unnecessary re-renders
-  const username = useMemo(() => session?.user?.username || '', [session]);
+  const username = useMemo(() => session?.user?.username || 'Guest', [session]);
   const role = useMemo(() => session?.user?.role || '', [session]);
   const image = useMemo(() => session?.user?.image || '/uploads/default-profile.jpg', [session]);
 
+  // Handle loading state
+  if (status === 'loading') {
+    return <div>Loading...</div>; // Display loading message
+  }
+
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
-      if (role === 'admin') {
-        router.push(`/admin/search?search=${encodeURIComponent(searchTerm)}`);
-      } else if (role === 'doctor') {
-        router.push(`/doctor/search?search=${encodeURIComponent(searchTerm)}`);
-      } else if (role === 'reception') {
-        router.push(`/reception/search?search=${encodeURIComponent(searchTerm)}`);
-      }
+      const path = `/${role}/search?search=${encodeURIComponent(searchTerm)}`;
+      router.push(path);
     }
   };
 
@@ -44,17 +44,16 @@ const Navbar = () => {
 
       <div className="flex items-center gap-5">
         <div className="flex items-center">
-          {/* Use a fallback image if profile.image is undefined */}
           <Image
-            src={image} // Ensure src is always a string
-            alt={username || "User profile"}
-            width={50} // Desired width
-            height={50} // Desired height
+            src={image}
+            alt={username}
+            width={50}
+            height={50}
             className="rounded-full object-cover"
           />
         </div>
         <div className="text-indigo-400 text-base font-normal capitalize p-1">
-          {username || 'Guest'}
+          {username}
         </div>
       </div>
     </div>
