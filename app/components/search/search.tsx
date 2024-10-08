@@ -60,7 +60,8 @@ const UsersPage: React.FC = () => {
   }, [search]);
 
   return (
-    <div>
+    <div className="flex mt-30 m-7">
+      <div className="flex-grow md:ml-60 container mx-auto p-4">
       {error && <div className="error">{error}</div>}
       {users.length > 0 && (
         <Table>
@@ -87,7 +88,7 @@ const UsersPage: React.FC = () => {
           </TableBody>
         </Table>
       )}
-    </div>
+    </div> </div>
   );
 };
 
