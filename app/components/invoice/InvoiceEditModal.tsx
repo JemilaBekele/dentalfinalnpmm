@@ -198,6 +198,7 @@ const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
                       onChange={(e) => handleServiceChange(index, e.target.value)}
                       className="w-full p-2 border border-gray-300 rounded-md"
                       aria-label="Select payment status" 
+                     
                     >
                       <option value="">{item.service.service || "Select"}</option>
                       {services.map((service) => (

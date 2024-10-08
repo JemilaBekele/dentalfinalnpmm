@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 
 type Patient = {
   _id: string;
-  firstname: string;
+  phoneNumber: string;
+  firstname: string
  
 };
 
@@ -15,7 +16,7 @@ type Doctor = {
 
 const OrderForm = () => {
   const [searchValue, setSearchValue] = useState<string>('');
-  const [searchType, setSearchType] = useState<string>('firstname');
+  const [searchType, setSearchType] = useState<string>('phoneNumber');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]); // Change to Doctor[]
@@ -45,7 +46,7 @@ const OrderForm = () => {
 
   const handleSearch = async () => {
     if (!searchValue) {
-      setError(`Please enter a ${searchType === 'firstname' ? 'firstname' : 'Card ID'}`);
+      setError(`Please enter a ${searchType === 'phoneNumber' ? 'phoneNumber' : 'Card ID'}`);
       return;
     }
 
@@ -120,14 +121,14 @@ const OrderForm = () => {
               onChange={(e) => setSearchType(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             >
-              <option value="firstname">name</option>
+              <option value="phoneNumber">Phone Number</option>
               <option value="cardno">Card ID</option>
             </select>
           </div>
 
           <div className="mb-4">
             <label htmlFor="searchValue" className="block text-sm font-medium text-gray-700">
-              {searchType === 'firstname' ? 'Search Patient by firstname' : 'Search Patient by Card ID'}
+              {searchType === 'phoneNumber' ? 'Search Patient by phoneNumber' : 'Search Patient by Card ID'}
             </label>
             <input
               id="searchValue"

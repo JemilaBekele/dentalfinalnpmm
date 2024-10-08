@@ -5,16 +5,16 @@ export async function GET(request: NextRequest) {
  
   try {
     const { searchParams } = new URL(request.url);
-    const firstname = searchParams.get('firstname');
+    const phoneNumber = searchParams.get('phoneNumber');
     const cardno = searchParams.get('cardno');
   
-    console.log('Received Query Parameters:', { firstname, cardno });
+    console.log('Received Query Parameters:', { phoneNumber, cardno });
   
-    if (!firstname && !cardno) {
-      return NextResponse.json({ error: 'firstname or Card ID is required' }, { status: 400 });
+    if (!phoneNumber && !cardno) {
+      return NextResponse.json({ error: 'phoneNumber or Card ID is required' }, { status: 400 });
     }
 
-    const query = firstname ? { firstname } : { cardno };
+    const query = phoneNumber ? { phoneNumber } : { cardno };
     const patient = await Patient.findOne(query).exec();
 
     if (!patient) {

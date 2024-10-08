@@ -1,68 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { Table, TableCaption, TableHead, TableHeader, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import OrderUpdateModal from "./UpdateOrderModal"; // Import the modal component
+"use client";
+import React, { useEffect, useState } from 'react';
+import Link from "next/link";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CodeOutlined, EditOutlined } from '@ant-design/icons';
+import OrderUpdateModal from '@/app/components/patient/active/UpdateOrderModal';
 
-interface Doctor {
- 
+type Doctor = {
   username: string;
-}
+};
 
-interface Order {
-_id:string;
-  assignedDoctorTo: Doctor;
-}
+type Order = {
+  _id: string;
+  assignedDoctorTo: Doctor | null;
+};
 
-interface Patient {
+type Patient = {
   _id: string;
   firstname: string;
   cardno: string;
-  orders?: Order[]; // Update orders type to reflect that it's an array of Order objects
-}
+  sex: string;
+  orders: Order[]; // Corrected the type to reflect the structure
+};
 
-const ActiveOrders: React.FC = () => {
+const Home: React.FC = () => {
   const [patientsWithOrders, setPatientsWithOrders] = useState<Patient[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null); // Changed to string | null
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  // Fetch patients with orders function
+  // Fetch patients with orders
   const fetchPatientsWithOrders = async () => {
     try {
       const response = await fetch('/api/patient/order/orderlist/active');
-      if (!response.ok) {
-        throw new Error('Failed to fetch patients with orders');
-      }
+      if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
-      
       if (data.success) {
-        setPatientsWithOrders(data.data); // Set the fetched data
+        setPatientsWithOrders(data.data);
       } else {
         setError(data.error || "Unknown error occurred");
       }
-    } catch (err) {
+    } catch (error) {
       setError("Error fetching data");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPatientsWithOrders(); // Fetch on component mount
+    fetchPatientsWithOrders();
+    const intervalId = setInterval(fetchPatientsWithOrders, 20000); // Refresh every 20 seconds
+    return () => clearInterval(intervalId);
   }, []);
 
-  const openModal = (orderId: string) => {
-    setSelectedOrderId(orderId); // Set orderId only when valid
-    setIsModalOpen(true);
+  const handleEditOrder = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setModalOpen(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedOrderId(null); // Reset selectedOrderId when closing modal
-    fetchPatientsWithOrders(); // Fetch data again when the modal closes
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedOrderId(null);
+    fetchPatientsWithOrders(); // Refetch data after modal closes
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -71,62 +73,68 @@ const ActiveOrders: React.FC = () => {
   }
 
   return (
-    <div className="max-w-5xl bg-white mx-auto p-6">
+    <div className="">
       <h1 className="text-2xl font-bold mb-6 text-center">Active Patient Orders</h1>
       <Table>
-        <TableCaption>A list of patients with Active Orders.</TableCaption>
+        <TableCaption>A list of patients with active orders.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Patient Name</TableHead>
             <TableHead>Card No</TableHead>
-            <TableHead>Assigned Doctor</TableHead> {/* New column for doctor name */}
-            <TableHead>Action</TableHead>
+            <TableHead>Assigned Doctor</TableHead>
+            <TableHead>Actions</TableHead>
+            <TableHead>Edit Order</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.isArray(patientsWithOrders) && patientsWithOrders.length > 0 ? (
+          {patientsWithOrders.length > 0 ? (
             patientsWithOrders.map((patient) => (
               <TableRow key={patient._id}>
                 <TableCell>{patient.firstname}</TableCell>
                 <TableCell>{patient.cardno}</TableCell>
                 <TableCell>
-                  {patient.orders && patient.orders.length > 0 ? (
-                    patient.orders[0].assignedDoctorTo?.username || "No Doctor Assigned" // Display doctor's name
-                  ) : (
-                    "No Orders"
-                  )}
+                  {patient.orders && patient.orders.length > 0
+                    ? patient.orders[0].assignedDoctorTo?.username || "No Doctor Assigned"
+                    : "No Doctor Assigned"}
                 </TableCell>
                 <TableCell>
-                {patient.orders !== undefined && patient.orders.length > 0 ? ( 
-  <button 
-    className="text-blue-500 hover:text-blue-700" 
-    onClick={() => openModal(patient.orders[0]._id)} // Use the order ID for modal
-  >
-    Update
-  </button>
-) : (
-  <span>No Orders</span>
-)}
-
+                  <Link href={`/doctor/medicaldata/medicalhistory/all/${patient._id}`}>
+                    <CodeOutlined className="text-2xl text-gray-600 hover:bg-slate-900 group-hover:text-white" />
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  {patient.orders && patient.orders.length > 0 ? (
+                    <button
+                      onClick={() => handleEditOrder(patient.orders[0]._id)}
+                      className="ml-2 text-blue-600 hover:bg-slate-500"
+                      aria-label="button" 
+                    >
+                      <EditOutlined />
+                    </button>
+                  ) : (
+                    <span>No Orders</span>
+                  )}
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
+              <TableCell colSpan={5} className="text-center">
                 No active orders found.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <OrderUpdateModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose} // Pass the close handler
-        orderId={selectedOrderId || ""} // Pass an empty string if selectedOrderId is null
-      />
+      {selectedOrderId && (
+        <OrderUpdateModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          orderId={selectedOrderId}
+        />
+      )}
     </div>
   );
 };
 
-export default ActiveOrders;
+export default Home;

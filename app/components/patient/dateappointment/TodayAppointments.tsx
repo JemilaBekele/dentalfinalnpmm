@@ -4,6 +4,7 @@ import { Table,TableCaption,TableHead,TableHeader, TableBody, TableCell, TableRo
 interface Appointment {
   id: string;
   appointmentDate: string;
+  appointmentTime: string;
   doctorId: {username:string};
   status: string;
   patientId: {
@@ -40,6 +41,13 @@ const TodayAppointments: React.FC = () => {
     fetchTodayAppointments();
   }, []);
 
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12; // Convert 24-hour to 12-hour, handling midnight as 12
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
   if (loading) {
     return <div>Loading appointments...</div>;
   }
@@ -56,10 +64,11 @@ const TodayAppointments: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Appointment Date</TableHead>
-              <TableHead>Name</TableHead>              
+              <TableHead>Appointment Time</TableHead>
+              <TableHead>Patient Name</TableHead>              
               <TableHead>Card No</TableHead>
               <TableHead>By</TableHead>
-              <TableHead>Action</TableHead>
+              
 
             </TableRow>
           </TableHeader>
@@ -67,8 +76,12 @@ const TodayAppointments: React.FC = () => {
           {appointments.length > 0 ? (
             appointments.map((appointment) => (
               <TableRow key={appointment.id}>
-                <TableCell>{new Date(appointment.appointmentDate).toLocaleString()}</TableCell>
-                <TableCell>{appointment.patientId.username} </TableCell>
+                <TableCell>{new Date(appointment.appointmentDate).toLocaleDateString(
+                      "en-US",
+                      { year: "numeric", month: "long", day: "numeric" }
+                    )}</TableCell>
+                <TableCell>{formatTime(appointment.appointmentTime)} </TableCell>
+                <TableCell>{appointment.patientId.username}</TableCell>
                 <TableCell>{appointment.patientId.cardno}</TableCell>
                 <TableCell>Dr {appointment.doctorId.username}</TableCell>
               </TableRow>

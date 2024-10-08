@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FieldTimeOutlined, CalendarOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { FieldTimeOutlined, RiseOutlined,FundViewOutlined, CalendarOutlined, AuditOutlined } from '@ant-design/icons';
 import RoleCountDisplay from './count'
-
+import TotalCountDisplay from './totalprice'
+import TotalCountBalance from './balance'
+import TotalMOnthDisplay from './month'
 const PatientDashboard = () => {
   const [totalPatients, setTotalPatients] = useState<number | null>(null);
   const [lastMonthPatients, setLastMonthPatients] = useState<number | null>(null);
@@ -100,8 +102,9 @@ const PatientDashboard = () => {
           {/* Active Patients Box */}
           <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center text-center">
             <div className="flex flex-col items-center mb-2">
-              <CheckCircleOutlined style={{ fontSize: '36px', color: '#32CD32' }} /> {/* Green color for icon */}
-              <h2 className="text-xl font-bold mt-2">Active Patients</h2>
+              <AuditOutlined  style={{ fontSize: '36px', color: '#32CD32' }} /> {/* Green color for icon */}
+              <h2 className="text-xl font-bold mt-2">Total Balance</h2>
+              <TotalCountBalance/>
             </div>
             
           </div>
@@ -115,9 +118,15 @@ const PatientDashboard = () => {
         <RoleCountDisplay />
         </div>
         <div className="bg-white shadow-sm rounded-lg  flex flex-col items-center justify-center text-center">
-
+        <h2 className="mt-6 text-xl font-bold text-gray-900 capitalize " style={{ fontSize: '34px', color: '#b2CD32' }}><RiseOutlined /> Invoice</h2>
+<TotalCountDisplay/>
         </div>
-        <div className="bg-white shadow-sm rounded-lg  flex flex-col items-center justify-center text-center">
+        <div className="bg-white shadow-sm rounded-lg mb-3 flex flex-col items-center justify-center text-center">
+        <div className="flex flex-col items-center mb-2">
+        <FundViewOutlined  style={{ fontSize: '36px', color: '#3ffD32' }} /> {/* Green color for icon */}
+        <h2 className="text-xl font-bold mt-2">Total Balance</h2>
+        </div>
+          <TotalMOnthDisplay/>
         </div>
       </div>
       </div>
