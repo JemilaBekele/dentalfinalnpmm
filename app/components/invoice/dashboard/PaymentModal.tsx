@@ -1,15 +1,16 @@
-// components/PaymentModal.tsx
-import { useEffect  } from 'react';
+import { useEffect } from 'react';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentPayment: number; // Accept the current payment amount
-  onSubmit: () => void; // No payment amount needed; just confirm
+  receipt: boolean; // Prop to handle the receipt state
+  onReceiptChange: (value: boolean) => void; // Function prop for receipt change
+  onSubmit: () => void; // Confirm payment
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, currentPayment, onSubmit }) => {
-  
+const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, currentPayment, receipt, onReceiptChange, onSubmit }) => {
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(); // Just confirm the payment
@@ -17,7 +18,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, currentPay
   };
 
   useEffect(() => {
-    // Reset the modal state when it opens
+    // Reset the modal state when it opens if needed
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -33,16 +34,35 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, currentPay
               type="number"
               id="currentPayment"
               value={currentPayment}
-              readOnly // Make it read-only
-              className="border rounded p-2 w-full bg-gray-200"
+              readOnly
+              className="border border-gray-300 p-2 rounded"
             />
           </div>
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Confirm
-          </button>
-          <button type="button" className="ml-2 text-gray-500" onClick={onClose}>
-            Cancel
-          </button>
+          <div className="mb-4">
+            <label htmlFor="receipt" className="block text-sm mb-2">Receipt</label>
+            <input
+              type="checkbox"
+              id="receipt"
+              checked={receipt}
+              onChange={(e) => onReceiptChange(e.target.checked)}
+              className="form-checkbox"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="mr-2 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Confirm
+            </button>
+          </div>
         </form>
       </div>
     </div>

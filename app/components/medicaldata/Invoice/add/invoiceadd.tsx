@@ -113,7 +113,8 @@ export default function InvoiceForm({ params }: InvoiceFormProps) {
       customerName,
       currentpayment,
       status,
-      confirm: false
+      confirm: false,
+      
     };
 
     try {

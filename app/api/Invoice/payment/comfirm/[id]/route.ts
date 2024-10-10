@@ -13,7 +13,7 @@ export async function PATCH(request: NextRequest) {
       console.log("User Data:", user);
       
       // Parse the request body
-      const { invoiceId, currentpayment } = await request.json(); 
+      const { invoiceId, currentpayment, receiptvalue } = await request.json(); 
       
       // Find the invoice by ID
       const invoice = await Invoice.findById(invoiceId);
@@ -28,7 +28,8 @@ export async function PATCH(request: NextRequest) {
       // Update the total paid and balance
       invoice.totalpaid += currentpayment; // Add the current payment amount to totalpaid
       invoice.balance = invoice.totalAmount - invoice.totalpaid; // Update the balance
-      invoice.currentpayment.amount = currentpayment; // Set the current payment amount
+      invoice.currentpayment.amount = currentpayment; 
+      invoice.currentpayment.receipt = receiptvalue  // Set the current payment amount
       invoice.currentpayment.confirm = true; // Confirm the payment
       invoice.currentpayment.date = new Date(); // Update the date to now
 
@@ -43,6 +44,7 @@ export async function PATCH(request: NextRequest) {
         Invoice: {
           id: invoice._id,
           amount: currentpayment,
+          receipt: receiptvalue,
           customerName: {
             id: invoice.customerName.id,
             username: invoice.customerName.username,

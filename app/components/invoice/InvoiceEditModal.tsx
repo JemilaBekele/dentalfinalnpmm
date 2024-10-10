@@ -87,6 +87,7 @@ const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
           _id: selectedService._id,
           service: selectedService.service,
           price: selectedService.price || 0,
+          
         },
         totalPrice: updatedItems[index].quantity * (selectedService.price || 0),
       };
@@ -105,6 +106,8 @@ const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
       updatedItems[index].quantity = Number(value);
     } else if (name === "price") {
       updatedItems[index].price = Number(value);
+    }else if (name === "description") {
+      updatedItems[index].description = value; // Update description
     }
 
     // Update totalPrice for the current item
@@ -139,7 +142,8 @@ const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
       currentpayment: {
         amount: currentpayment,
         date: new Date(), // Set to the current date
-        confirm: false,   // Always set to false
+        confirm: currentpayment > 0 ? false : invoice.currentpayment.confirm, // Set to false if payment > 0, otherwise keep existing
+      receipt: currentpayment > 0 ? false : invoice.currentpayment.receipt, // Always set to false
       },
       status,
     };
@@ -211,12 +215,13 @@ const InvoiceEditModal: React.FC<InvoiceEditModalProps> = ({
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <input
-                      type="text"
-                      name="description"
-                      value={item.description}
-                      onChange={(e) => handleInputChange(index, e)}
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                    />
+  type="text"
+  name="description"
+  value={item.description} // Ensure it references item.description
+  onChange={(e) => handleInputChange(index, e)}
+  className="w-full p-2 border border-gray-300 rounded-md"
+/>
+
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Quantity</label>

@@ -29,6 +29,7 @@ export interface Service {
     amount: number;
     date: Date;
     confirm: boolean;
+    receipt: boolean;
   };
   status: string; 
     createdBy: {

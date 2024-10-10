@@ -8,12 +8,21 @@ const HistorySchema = new mongoose.Schema({
       ref: 'Invoice',
       required: [true, 'Please provide user ID'],
     },
+    
     amount: {
-        type: Number,
-        required: true,
-        default: 0,
-        min: 0,
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
+      validate: {
+        validator: Number.isInteger,
+        message: 'Amount must be an integer',
       },
+    },
+    receipt: {
+      type: Boolean,
+      default: false,
+    },  
       customerName: {
         id: {
           type: mongoose.Schema.Types.ObjectId,

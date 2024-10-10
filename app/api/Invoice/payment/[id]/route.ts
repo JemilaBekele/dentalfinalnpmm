@@ -30,6 +30,7 @@ interface CreateInvoiceRequest {
     amount: number;
     date: Date;
     confirm: boolean;
+    receipt: boolean;
   };
   status: 'Paid' | 'Pending' | 'Cancel' | 'order';
   confirm: boolean ;

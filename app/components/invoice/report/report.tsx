@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import DataTable from "@/app/components/ui/TableComponent"; // Import the DataTable component
-import Modal from "@/app/components/invoice/detailinvoice"; // Import the Modal component
+import DataTable from "@/app/components/ui/TableComponent";
+import Modal from "@/app/components/invoice/detailinvoice";
 import { EyeOutlined } from "@ant-design/icons";
-import * as XLSX from 'xlsx'; // Import the XLSX library
+import * as XLSX from 'xlsx';
 
-// Define the Invoice interface based on the History model
 interface Invoice {
   _id: string;
   Invoice: {
     id: string;
     amount: number;
+    receipt: boolean;
     created: {
       username: string;
       id: string;
@@ -22,10 +22,9 @@ interface Invoice {
       cardno: string;
     };
   };
-  createdAt: string; // to represent the timestamp
+  createdAt: string;
 }
 
-// Define the Card interface based on the provided data structure
 interface Card {
   _id: string;
   cardprice: number;
@@ -46,7 +45,6 @@ interface Card {
   };
 }
 
-// Define the Doctor interface based on your API response
 interface Doctor {
   _id: string;
   username: string;
@@ -56,6 +54,7 @@ const FetchInvoices = () => {
   const [username, setUsername] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [receipt, setReceipt] = useState<string>(''); // New state for receipt filter
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [cards, setCards] = useState<Card[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -65,7 +64,7 @@ const FetchInvoices = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch('/api/patient/doctor'); // Adjust the endpoint as needed
+      const response = await fetch('/api/patient/doctor');
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch doctors");
@@ -78,14 +77,13 @@ const FetchInvoices = () => {
   };
 
   useEffect(() => {
-    fetchDoctors(); // Fetch doctors when the component mounts
+    fetchDoctors();
   }, []);
 
   const handleFetchInvoices = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setErrorMessage(''); // Clear any previous error messages
+    e.preventDefault();
+    setErrorMessage('');
 
-    // Validate date inputs
     if (!username && (!startDate || !endDate)) {
       setErrorMessage('Either username or both start and end dates are required.');
       return;
@@ -97,25 +95,23 @@ const FetchInvoices = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, startDate, endDate }),
+        body: JSON.stringify({ username, startDate, endDate, receipt: receipt !== '' ? receipt === 'true' : undefined }),
       });
 
       const data = await response.json();
-      console.log("Response data:", data); // Log the response to check structure
       if (data.success) {
         setInvoices(data.data.history || []);
         setCards(data.data.cards || []);
       } else {
-        setErrorMessage(data.message); // Show error message if the response indicates failure
+        setErrorMessage(data.message);
       }
     } catch (error) {
       console.error('Error fetching invoices:', error);
-      setErrorMessage('Failed to fetch invoices. Please try again.'); // Show general error message
+      setErrorMessage('Failed to fetch invoices. Please try again.');
     }
   };
 
   const handleViewInvoice = (invoice: Invoice) => {
-    console.log("Viewing invoice ID:", invoice.Invoice.id); // Log the ID for debugging
     setSelectedInvoiceId(invoice.Invoice.id);
     setIsModalOpen(true);
   };
@@ -186,11 +182,7 @@ const FetchInvoices = () => {
 
   // Define columns for the Invoice DataTable
   const invoiceColumns = [
-    {
-      header: "Invoice ID",
-      key: "_id" as keyof Invoice,
-      render: (invoice: Invoice) => invoice.Invoice.id,
-    },
+    
     {
       header: "Customer",
       key: "customerName.username" as keyof Invoice,
@@ -224,11 +216,7 @@ const FetchInvoices = () => {
 
   // Define columns for the Card DataTable
   const cardColumns = [
-    {
-      header: "Card ID",
-      key: "_id" as keyof Card,
-      render: (card: Card) => card._id,
-    },
+    
     {
       header: "Patient Name",
       key: "patient.username" as keyof Card,
@@ -262,7 +250,6 @@ const FetchInvoices = () => {
               <select
                 id="doctor"
                 name="doctor"
-                aria-label="Select Doctor"
                 className="border rounded-md w-full p-2"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -295,6 +282,21 @@ const FetchInvoices = () => {
                 />
               </div>
             </div>
+            <div className="mb-4">
+              <label htmlFor="receipt" className="block text-sm font-medium text-gray-700">Receipt Status:</label>
+              <select
+                id="receipt"
+                name="receipt"
+                className="border rounded-md w-full p-2"
+                value={receipt}
+                onChange={(e) => setReceipt(e.target.value)}
+              >
+                <option value="">-- Select Receipt Status --</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+                
+              </select>
+            </div>
             <button type="submit" className="bg-blue-500 text-white rounded-md py-2 px-4">Fetch Invoices</button>
           </form>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
@@ -312,7 +314,7 @@ const FetchInvoices = () => {
               <h3 className="mt-4">Total Card Price: {totalCardPrice}</h3>
             </div>
           )}
-          <h3 className="mt-4">Total  Price: {grandTotal}</h3>
+          <h3 className="mt-4">Total Price: {grandTotal}</h3>
           {invoices.length > 0 || cards.length > 0 ? (
             <div className="mt-4">
               <button onClick={exportToExcel} className="bg-green-500 text-white rounded-md py-2 px-4 mx-10">Export Invoice to Excel</button>

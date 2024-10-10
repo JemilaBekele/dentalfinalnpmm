@@ -29,6 +29,7 @@ interface Invoice extends Document {
     amount: number;
     date: Date;
     confirm: boolean;
+    receipt: boolean;
   };
   status: string;  
   createdBy: typeof userReferenceSchema;
@@ -122,6 +123,10 @@ const InvoiceSchema = new Schema<Invoice>({
       default: Date.now,
     },
     confirm: {
+      type: Boolean,
+      default: false,
+    },
+    receipt: {
       type: Boolean,
       default: false,
     },

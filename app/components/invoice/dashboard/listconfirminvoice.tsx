@@ -15,6 +15,7 @@ interface Invoice {
     amount: number;
     date: Date;
     confirm: boolean;
+    receipt: boolean;
   };
   createdBy: {
     username: string;
@@ -28,6 +29,7 @@ const UnconfirmedInvoices: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>("");
   const [currentPaymentAmount, setCurrentPaymentAmount] = useState<number>(0);
+  const [currentReceipt, setCurrentReceipt] = useState<boolean>(false); // Updated name
 
   // Fetch invoices function
   const fetchUnconfirmedInvoices = async () => {
@@ -52,18 +54,16 @@ const UnconfirmedInvoices: React.FC = () => {
   useEffect(() => {
     fetchUnconfirmedInvoices(); // Fetch on component mount
 
-    // Set an interval to fetch invoices every 30 seconds
-    const intervalId = setInterval(() => {
-      fetchUnconfirmedInvoices();
-    }, 60000); // 30000 ms = 30 seconds
+    // Set an interval to fetch invoices every minute
+    const intervalId = setInterval(fetchUnconfirmedInvoices, 60000); // 60000 ms = 1 minute
 
-    // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
   const openModal = (invoice: Invoice) => {
     setSelectedInvoiceId(invoice._id);
-    setCurrentPaymentAmount(invoice.currentpayment.amount); // Set the current payment amount
+    setCurrentPaymentAmount(invoice.currentpayment.amount); 
+    setCurrentReceipt(invoice.currentpayment.receipt); // Updated variable name
     setIsModalOpen(true);
   };
 
@@ -78,14 +78,13 @@ const UnconfirmedInvoices: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ invoiceId: selectedInvoiceId, currentpayment: currentPaymentAmount }),
+        body: JSON.stringify({ invoiceId: selectedInvoiceId, currentpayment: currentPaymentAmount, receiptvalue: currentReceipt }), // Updated variable name
       });
       const data = await response.json();
       if (!data.success) {
         setError(data.message || "Failed to update invoice");
       } else {
-        // If successful, fetch the invoices again and close the modal
-        fetchUnconfirmedInvoices();
+        fetchUnconfirmedInvoices(); // Refresh invoices
         handleModalClose();
       }
     } catch (error) {
@@ -135,7 +134,7 @@ const UnconfirmedInvoices: React.FC = () => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center">
+              <TableCell colSpan={5} className="text-center">
                 No unconfirmed invoices found.
               </TableCell>
             </TableRow>
@@ -147,6 +146,8 @@ const UnconfirmedInvoices: React.FC = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         currentPayment={currentPaymentAmount}
+        receipt={currentReceipt} // Updated prop
+        onReceiptChange={setCurrentReceipt} // New function to handle receipt change
         onSubmit={handlePaymentSubmit}
       />
     </div>

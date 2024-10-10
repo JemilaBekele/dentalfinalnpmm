@@ -6,31 +6,32 @@ import { HistoryItem } from '@/types/history';
 
 interface Query {
   'Invoice.created.username'?: string;
+  'Invoice.receipt'?: boolean;
   createdAt?: {
     $gte?: Date;
     $lte?: Date;
   };
 }
 
+
+
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { username, startDate, endDate } = body;
+  const { username, startDate, endDate, receipt } = body; // Include receipt parameter
 
-  // Check if at least one of the required parameters is provided
   if (!username && (!startDate || !endDate)) {
     return NextResponse.json({ message: 'Either username or both start and end dates are required.', success: false }, { status: 400 });
   }
 
   try {
-    const query: Query = {}; // Use the specific Query type
-
-    // Declare startDateObj and endDateObj here
+    const query: Query = {};
     let startDateObj: Date | null = null;
     let endDateObj: Date | null = null;
 
     // Add username filter if provided
     if (username) {
-      query['Invoice.created.username'] = username; // Access nested property correctly
+      query['Invoice.created.username'] = username;
     }
 
     // Add date range filter if both startDate and endDate are provided
@@ -42,28 +43,28 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Invalid date format.', success: false }, { status: 400 });
       }
 
-      if (endDateObj < startDateObj) {
+      if (endDateObj <= startDateObj) {
         return NextResponse.json({ message: 'End date must be greater than or equal to start date.', success: false }, { status: 400 });
       }
 
-      endDateObj.setHours(23, 59, 59, 999); // Set end date to the end of the day
-
-      // Add date filter to query
-      query.createdAt = { $gte: startDateObj, $lte: endDateObj }; // Access createdAt correctly
+      endDateObj.setHours(23, 59, 59, 999);
+      query.createdAt = { $gte: startDateObj, $lte: endDateObj };
     }
 
-    // Fetch history based on the query
+    // Add receipt filter if provided
+    if (receipt !== undefined) {
+      query['Invoice.receipt'] = receipt; // Use the receipt filter
+    }
+
     const history: HistoryItem[] = await History.find(query);
 
-    // Only fetch cards if username is not provided
     let cards = [];
     if (!username) {
       cards = await Card.find({
-        createdAt: { $gte: startDateObj, $lte: endDateObj }, // Adjust to your Card model date field
-      }) // Populate patient reference if needed
+        createdAt: { $gte: startDateObj, $lte: endDateObj },
+      });
     }
 
-    // Return the combined results
     return NextResponse.json({
       message: 'Invoices and cards retrieved successfully',
       success: true,
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Failed to retrieve invoices and cards.', success: false }, { status: 500 });
   }
 }
+
 
 
 
