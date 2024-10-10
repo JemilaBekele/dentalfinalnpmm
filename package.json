@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dental": "file:",
     "formidable": "^3.5.1",
     "lucide-react": "^0.441.0",
     "mongodb": "^6.9.0",

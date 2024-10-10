@@ -160,11 +160,12 @@ const UserForm = () => {
           >
             Submit
           </button>
-          {errorMessage && (
-            <p className="mt-4 text-red-500 text-sm">{errorMessage}</p>
-          )}
+          
         </div>
       </form>
+      {errorMessage && (
+            <p className="mt-4 bg-red-200 text-red-500 text-sm">{errorMessage}</p>
+          )}
     </div>
   );
 };

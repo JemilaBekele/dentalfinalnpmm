@@ -62,6 +62,7 @@ const UsersPage: React.FC = () => {
   return (
     <div className="flex mt-30 m-7">
       <div className="flex-grow md:ml-60 container mx-auto p-4">
+      <h1 className="text-2xl font-bold">Patients</h1>
       {error && <div className="error">{error}</div>}
       {users.length > 0 && (
         <Table>

@@ -9,7 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSession } from 'next-auth/react';
 type TreatmentPlan = {
-  Extraction?: boolean;
+  Exrtaction?: boolean;
     Scaling?: boolean;
     Rootcanal?: boolean;
     Filling?: boolean;

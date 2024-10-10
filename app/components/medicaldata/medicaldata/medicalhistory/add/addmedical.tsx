@@ -18,7 +18,7 @@ type Vitalsign = {
 };
 
 type TreatmentPlan = {
-  Extraction: boolean;
+  Exrtaction: boolean;
   Scaling: boolean;
   Rootcanal: boolean;
   Filling: boolean;
@@ -135,7 +135,7 @@ export default function MedicalFindingForm({ params }: MedicalFindingFormProps) 
     Investigation: "",
     Assessment: "",
     TreatmentPlan: {
-      Extraction: false,
+      Exrtaction: false,
       Scaling: false,
       Rootcanal: false,
       Filling: false,
@@ -148,7 +148,7 @@ export default function MedicalFindingForm({ params }: MedicalFindingFormProps) 
       other: "",
     },
     TreatmentDone: {
-      Extraction: false,
+      Exrtaction: false,
       Scaling: false,
       Rootcanal: false,
       Filling: false,
@@ -359,9 +359,9 @@ export default function MedicalFindingForm({ params }: MedicalFindingFormProps) 
               <div className="mt-4">
                 <h2 className="font-bold mb-2">Treatment Plan</h2>
                 <CheckboxField
-                  label="Extraction"
-                  name="TreatmentPlan.Extraction"
-                  checked={formData.TreatmentPlan.Extraction}
+                  label="Exrtaction"
+                  name="TreatmentPlan.Exrtaction"
+                  checked={formData.TreatmentPlan.Exrtaction}
                   onChange={handleInputChange}
                 />
                 <CheckboxField
@@ -431,9 +431,9 @@ export default function MedicalFindingForm({ params }: MedicalFindingFormProps) 
               <div className="mt-4">
                 <h2 className="font-bold mb-2">Treatment Done</h2>
                 <CheckboxField
-                  label="Extraction"
-                  name="TreatmentDone.Extraction"
-                  checked={formData.TreatmentDone.Extraction}
+                  label="Exrtaction"
+                  name="TreatmentDone.Exrtaction"
+                  checked={formData.TreatmentDone.Exrtaction}
                   onChange={handleInputChange}
                 />
                 <CheckboxField

@@ -43,13 +43,13 @@ const TotalMOnthDisplay = () => {
       {/* Display last month's totals */}
       <div className="bg-indigo-200 shadow-md rounded-lg p-6 w-60 text-center">
         <h2 className="text-lg font-semibold text-gray-700">Total Last Month</h2>
-        <p className="text-xl font-bold text-gray-600">
+        <p className="text-base  text-gray-600">
           History: {data?.totalHistoryAmountLastMonth || 0}
         </p>
-        <p className="text-xl font-bold text-gray-600">
+        <p className="text-base  text-gray-600">
           Cards: {data?.totalCardPriceLastMonth || 0}
         </p>
-        <p className="text-xl font-bold text-gray-600">
+        <p className="text-base  text-gray-600">
           Grand Total: {data?.grandTotalLastMonth || 0}
         </p>
       </div>

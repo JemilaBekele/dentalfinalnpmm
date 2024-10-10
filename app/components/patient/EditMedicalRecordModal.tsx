@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 type TreatmentPlan = {
-    Extraction?: boolean;
+    Exrtaction?: boolean;
     Scaling?: boolean;
     Rootcanal?: boolean;
     Filling?: boolean;
@@ -228,7 +228,7 @@ const EditMedicalRecordModal: React.FC<EditMedicalRecordModalProps> = ({
                     <div className="mb-4 col-span-2">
                         <label className="block font-bold mb-2">Treatment Plan</label>
                         <div className="flex flex-col space-y-2">
-                            {["Extraction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
+                            {["Exrtaction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
                                 <div key={treatment} className="flex items-center">
                                     <input
                                         type="checkbox"
@@ -253,7 +253,7 @@ const EditMedicalRecordModal: React.FC<EditMedicalRecordModalProps> = ({
                     <div className="mb-4 col-span-2">
                         <label className="block font-bold mb-2">Treatment Done</label>
                         <div className="flex flex-col space-y-2">
-                            {["Extraction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
+                            {["Exrtaction", "Scaling", "Rootcanal", "Filling", "Bridge", "Crown", "Apecectomy", "Fixedorthodonticappliance", "Removableorthodonticappliance", "Removabledenture"].map((treatment) => (
                                 <div key={treatment} className="flex items-center">
                                     <input
                                         type="checkbox"
